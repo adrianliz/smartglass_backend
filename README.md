@@ -11,4 +11,5 @@ También, se podrán generar distintas estadísticas derivadas de los resultados
 
 ## Versiones disponibles
 - :white_check_mark: v0.1.0 -> Lectura de los eventos producidos de una base de datos MongoDB
+- :white_check_mark: v0.2.0 -> REST endpoint de consulta de los eventos producidos + Swagger (documentación API)
 
