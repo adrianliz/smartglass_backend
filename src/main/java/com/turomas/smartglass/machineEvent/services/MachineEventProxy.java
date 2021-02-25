@@ -1,13 +1,13 @@
-package com.turomas.smartglass.services;
+package com.turomas.smartglass.machineEvent.services;
 
-import com.turomas.smartglass.domain.MachineEvent;
-import com.turomas.smartglass.repositories.MachineEventRepository;
-import com.turomas.smartglass.services.exceptions.MachineEventNotFound;
+import com.turomas.smartglass.machineEvent.domain.MachineEvent;
+import com.turomas.smartglass.machineEvent.repositories.MachineEventRepository;
+import com.turomas.smartglass.machineEvent.services.exceptions.MachineEventNotFound;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.SortedSet;
 
 @Service
 public class MachineEventProxy implements MachineEventService {
@@ -18,8 +18,8 @@ public class MachineEventProxy implements MachineEventService {
   }
 
   @Override
-  public List<MachineEvent> getMachineEvents() {
-    return machineEventRepository.findAll();
+  public SortedSet<MachineEvent> getMachineEvents() {
+    return machineEventRepository.getMachineEvents();
   }
 
   @Override
@@ -30,7 +30,7 @@ public class MachineEventProxy implements MachineEventService {
   }
 
   @Override
-  public List<MachineEvent> searchBy(
+  public SortedSet<MachineEvent> searchBy(
       @NonNull String machineName,
       @NonNull LocalDateTime startDate,
       @NonNull LocalDateTime endDate) {

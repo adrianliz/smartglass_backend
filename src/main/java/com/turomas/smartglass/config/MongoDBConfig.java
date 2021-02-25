@@ -1,8 +1,8 @@
 package com.turomas.smartglass.config;
 
-import com.turomas.smartglass.converters.DateConverter;
-import com.turomas.smartglass.converters.EventTypeConverter;
-import com.turomas.smartglass.converters.LocalDateTimeConverter;
+import com.turomas.smartglass.machineEvent.converters.DateConverter;
+import com.turomas.smartglass.machineEvent.converters.EventTypeConverter;
+import com.turomas.smartglass.machineEvent.converters.LocalDateTimeConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;

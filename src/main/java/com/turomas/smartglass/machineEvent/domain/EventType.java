@@ -1,4 +1,4 @@
-package com.turomas.smartglass.domain;
+package com.turomas.smartglass.machineEvent.domain;
 
 public enum EventType {
   OK,

@@ -1,13 +1,13 @@
 package com.turomas.smartglass.rest;
 
-import com.turomas.smartglass.domain.MachineEvent;
-import com.turomas.smartglass.services.MachineEventService;
-import com.turomas.smartglass.services.exceptions.MachineEventNotFound;
+import com.turomas.smartglass.machineEvent.domain.MachineEvent;
+import com.turomas.smartglass.machineEvent.services.MachineEventService;
+import com.turomas.smartglass.machineEvent.services.exceptions.MachineEventNotFound;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.SortedSet;
 
 @RestController
 @RequestMapping("/events")
@@ -19,7 +19,7 @@ public class MachineEventController {
   }
 
   @GetMapping("")
-  public List<MachineEvent> getMachineEvents() {
+  public SortedSet<MachineEvent> getMachineEvents() {
     return machineEventService.getMachineEvents();
   }
 
@@ -29,7 +29,7 @@ public class MachineEventController {
   }
 
   @GetMapping("/search")
-  public List<MachineEvent> getMachineEvents(
+  public SortedSet<MachineEvent> getMachineEvents(
       @RequestParam("machineName") String machineName,
       @RequestParam(name = "startDate") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
           LocalDateTime startDate,

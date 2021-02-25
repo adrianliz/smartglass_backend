@@ -1,4 +1,4 @@
-package com.turomas.smartglass.converters;
+package com.turomas.smartglass.machineEvent.converters;
 
 import org.springframework.core.convert.converter.Converter;
 

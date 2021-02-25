@@ -1,6 +1,6 @@
-package com.turomas.smartglass.converters;
+package com.turomas.smartglass.machineEvent.converters;
 
-import com.turomas.smartglass.domain.EventType;
+import com.turomas.smartglass.machineEvent.domain.EventType;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 

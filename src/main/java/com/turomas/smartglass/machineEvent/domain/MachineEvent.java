@@ -1,4 +1,4 @@
-package com.turomas.smartglass.domain;
+package com.turomas.smartglass.machineEvent.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
