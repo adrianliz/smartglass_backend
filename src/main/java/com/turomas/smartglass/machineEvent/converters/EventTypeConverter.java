@@ -6,7 +6,6 @@ import org.springframework.data.convert.ReadingConverter;
 
 @ReadingConverter
 public class EventTypeConverter implements Converter<String, EventType> {
-
   @Override
   public EventType convert(String source) {
     for (EventType eventType : EventType.values()) {

@@ -17,3 +17,4 @@ También, se podrán generar distintas estadísticas derivadas de los resultados
 - :white_check_mark: v0.2.0 -> REST endpoint de consulta de los eventos producidos + Swagger (documentación API)
 - :white_check_mark: v0.3.0 -> División en módulos, REST endpoint para los gemelos digitales y cálculo de la
   disponibilidad para un periodo temporal
+- :white_check_mark: v0.4.0 -> Primera versión de los cálculos de los distintos ratios para un periodo temporal

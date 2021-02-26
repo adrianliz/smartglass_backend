@@ -1,6 +1,6 @@
 package com.turomas.smartglass.machineEvent.domain;
 
-public enum EventClass {
+public enum EventClassification {
   EVENT,
   STATUS
 }

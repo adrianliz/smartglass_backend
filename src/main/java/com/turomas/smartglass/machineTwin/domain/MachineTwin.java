@@ -1,6 +1,7 @@
 package com.turomas.smartglass.machineTwin.domain;
 
 import com.turomas.smartglass.machineEvent.repositories.MachineEventRepository;
+import com.turomas.smartglass.machineTwin.domain.exceptions.InvalidRatio;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,16 +15,21 @@ public class MachineTwin {
     ratiosByPeriod = new HashMap<>();
   }
 
-  public RatioDTO calculateAvailability(
-      MachineEventRepository machineEventRepository, Period period) {
-
-    MachineTwinRatios machineTwinRatios = this.ratiosByPeriod.get(period);
+  private MachineTwinRatios getRatiosByPeriod(Period period) {
+    MachineTwinRatios machineTwinRatios = ratiosByPeriod.get(period);
 
     if (machineTwinRatios == null) {
       machineTwinRatios = new MachineTwinRatios(name, period);
-      this.ratiosByPeriod.put(period, machineTwinRatios);
+      ratiosByPeriod.put(period, machineTwinRatios);
     }
 
-    return machineTwinRatios.calculateAvailability(machineEventRepository);
+    return machineTwinRatios;
+  }
+
+  public RatioDTO calculateRatio(
+      RatioType ratio, Period period, MachineEventRepository machineEventRepository)
+      throws InvalidRatio {
+
+    return getRatiosByPeriod(period).calculateRatio(ratio, machineEventRepository);
   }
 }

@@ -1,24 +1,34 @@
 package com.turomas.smartglass.machineTwin.domain;
 
-import com.turomas.smartglass.machineEvent.domain.EventType;
 import com.turomas.smartglass.machineEvent.domain.MachineEvent;
 import com.turomas.smartglass.machineEvent.repositories.MachineEventRepository;
+import com.turomas.smartglass.machineTwin.domain.exceptions.InvalidRatio;
 
-import java.time.ZoneOffset;
+import java.time.Duration;
 import java.util.SortedSet;
+
+import static com.turomas.smartglass.machineTwin.domain.RatioType.*;
 
 public class MachineTwinRatios {
   private final String machineName;
   private final Period period;
-  private long activeTime;
-  private long stoppedTime;
   private MachineEvent lastEventEvaluated;
+  private long machineActiveSeconds;
+  private long machineBreakdownSeconds;
+  private long machineWorkingSeconds;
+  private long wastedSeconds;
+  private long completedProcesses;
+  private long abortedProcesses;
 
   public MachineTwinRatios(String machineTwinName, Period period) {
     this.machineName = machineTwinName;
     this.period = period;
-    activeTime = 0;
-    stoppedTime = 0;
+    machineActiveSeconds = 0;
+    machineBreakdownSeconds = 0;
+    machineWorkingSeconds = 0;
+    wastedSeconds = 0;
+    completedProcesses = 0;
+    abortedProcesses = 0;
   }
 
   private SortedSet<MachineEvent> getNewEventsProduced(
@@ -42,30 +52,80 @@ public class MachineTwinRatios {
     return newEventsProduced;
   }
 
-  public RatioDTO calculateAvailability(MachineEventRepository machineEventRepository) {
+  private void updateRatios(MachineEventRepository machineEventRepository) {
     for (MachineEvent newEventProduced : getNewEventsProduced(machineEventRepository)) {
-      EventType lastEventType = lastEventEvaluated.getEventType();
-      long msNewEventProduced = newEventProduced.getTimestamp().toEpochSecond(ZoneOffset.UTC);
-      long msLastEventProduced = lastEventEvaluated.getTimestamp().toEpochSecond(ZoneOffset.UTC);
+      Duration timeSinceLastEvent =
+          Duration.between(lastEventEvaluated.getTimestamp(), newEventProduced.getTimestamp());
 
-      if ((lastEventType.equals(EventType.ERROR))
-          || (lastEventType.equals(EventType.POWER_OFF))
-          || (newEventProduced.getEventType().equals(EventType.POWER_ON))) {
-        stoppedTime += msNewEventProduced - msLastEventProduced;
+      if (lastEventEvaluated.machineIsInBreakdown()) {
+        machineBreakdownSeconds += timeSinceLastEvent.getSeconds();
       } else {
-        activeTime += msNewEventProduced - msLastEventProduced;
+        machineActiveSeconds += timeSinceLastEvent.getSeconds();
+      }
+
+      if (lastEventEvaluated.machineStartsProcess()) {
+        if (newEventProduced.machineCompletesProcess(lastEventEvaluated)) {
+          completedProcesses++;
+        } else if (newEventProduced.machineIsInBreakdown()) {
+          abortedProcesses++;
+        }
+
+        machineWorkingSeconds += timeSinceLastEvent.getSeconds();
+      } else if (lastEventEvaluated.machineIsAvailable()) {
+        wastedSeconds += timeSinceLastEvent.getSeconds();
       }
 
       lastEventEvaluated = newEventProduced;
     }
+  }
 
-    long totalTime = activeTime + stoppedTime;
-    double availability = 1;
+  private RatioDTO calculateAvailability() {
+    long totalTime = machineActiveSeconds + machineBreakdownSeconds;
+    double availability = 0;
+
     if (totalTime > 0) {
-      availability = (double) activeTime / totalTime;
+      availability = (double) machineActiveSeconds / totalTime;
     }
 
-    return new RatioDTO(
-        machineName, RatioType.AVAILABILITY, availability, period, lastEventEvaluated);
+    return new RatioDTO(AVAILABILITY, availability, period);
+  }
+
+  private RatioDTO calculateEfficiency() {
+    long totalTime = machineWorkingSeconds + wastedSeconds;
+    double efficiency = 0;
+
+    if (totalTime > 0) {
+      efficiency = (double) machineWorkingSeconds / totalTime;
+    }
+
+    return new RatioDTO(EFFICIENCY, efficiency, period);
+  }
+
+  private RatioDTO calculateEffectiveness() {
+    long totalProcesses = completedProcesses + abortedProcesses;
+    double effectiveness = 0;
+
+    if (totalProcesses > 0) {
+      effectiveness = (double) completedProcesses / totalProcesses;
+    }
+
+    return new RatioDTO(EFFECTIVENESS, effectiveness, period);
+  }
+
+  public RatioDTO calculateRatio(RatioType ratio, MachineEventRepository machineEventRepository)
+      throws InvalidRatio {
+
+    updateRatios(machineEventRepository);
+
+    switch (ratio) {
+      case AVAILABILITY:
+        return calculateAvailability();
+      case EFFICIENCY:
+        return calculateEfficiency();
+      case EFFECTIVENESS:
+        return calculateEffectiveness();
+    }
+
+    throw new InvalidRatio(ratio);
   }
 }

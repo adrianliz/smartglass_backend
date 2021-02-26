@@ -1,7 +1,9 @@
 package com.turomas.smartglass.rest.exceptions;
 
 import com.turomas.smartglass.machineEvent.services.exceptions.MachineEventNotFound;
-import com.turomas.smartglass.machineTwin.domain.exceptions.PeriodNotValidException;
+import com.turomas.smartglass.machineTwin.domain.exceptions.InvalidPeriod;
+import com.turomas.smartglass.machineTwin.domain.exceptions.InvalidRatio;
+import com.turomas.smartglass.machineTwin.services.exceptions.MachineTwinNotFound;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,9 +18,21 @@ public class APIExceptionHandler {
         .body(new APIException(HttpStatus.NOT_FOUND, ex.getMessage()));
   }
 
-  @ExceptionHandler(PeriodNotValidException.class)
-  public ResponseEntity<APIException> handleMachineEventNotFound(PeriodNotValidException ex) {
+  @ExceptionHandler(MachineTwinNotFound.class)
+  public ResponseEntity<APIException> handleMachineTwinNotFound(MachineTwinNotFound ex) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(new APIException(HttpStatus.NOT_FOUND, ex.getMessage()));
+  }
+
+  @ExceptionHandler(InvalidPeriod.class)
+  public ResponseEntity<APIException> handleInvalidPeriod(InvalidPeriod ex) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-      .body(new APIException(HttpStatus.BAD_REQUEST, ex.getMessage()));
+        .body(new APIException(HttpStatus.BAD_REQUEST, ex.getMessage()));
+  }
+
+  @ExceptionHandler(InvalidRatio.class)
+  public ResponseEntity<APIException> handleInvalidRatio(InvalidRatio ex) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body(new APIException(HttpStatus.BAD_REQUEST, ex.getMessage()));
   }
 }
