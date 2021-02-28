@@ -1,7 +1,7 @@
 package com.turomas.smartglass.machineTwin.services;
 
-import com.turomas.smartglass.machineEvent.domain.CuttingMaterial;
-import com.turomas.smartglass.machineEvent.domain.Optimization;
+import com.turomas.smartglass.machineTwin.domain.MaterialDTO;
+import com.turomas.smartglass.machineTwin.domain.OptimizationDTO;
 import com.turomas.smartglass.machineEvent.repositories.MachineEventRepository;
 import com.turomas.smartglass.machineTwin.domain.MachineTwin;
 import com.turomas.smartglass.machineTwin.domain.Period;
@@ -25,11 +25,11 @@ public class MachineTwinProxy implements MachineTwinService {
     this.machineEventRepository = machineEventRepository;
   }
 
-  private MachineTwin getMachineTwin(String machineTwinName) throws MachineTwinNotFound {
-    MachineTwin machineTwin = machineTwinRepository.getMachineTwin(machineTwinName);
+  private MachineTwin getMachineTwin(String machineName) throws MachineTwinNotFound {
+    MachineTwin machineTwin = machineTwinRepository.getMachineTwin(machineName);
 
     if (machineTwin != null) return machineTwin;
-    throw new MachineTwinNotFound(machineTwinName);
+    throw new MachineTwinNotFound(machineName);
   }
 
   @Override
@@ -43,7 +43,7 @@ public class MachineTwinProxy implements MachineTwinService {
   }
 
   @Override
-  public List<CuttingMaterial> getMostUsedMaterials(
+  public List<MaterialDTO> getMostUsedMaterials(
       String machineName, LocalDateTime startDate, LocalDateTime endDate)
       throws MachineTwinNotFound, InvalidPeriod {
 
@@ -53,7 +53,7 @@ public class MachineTwinProxy implements MachineTwinService {
   }
 
   @Override
-  public List<Optimization> getOptimizationsHistory(
+  public List<OptimizationDTO> getOptimizationsHistory(
       String machineName, LocalDateTime startDate, LocalDateTime endDate)
       throws MachineTwinNotFound, InvalidPeriod {
 

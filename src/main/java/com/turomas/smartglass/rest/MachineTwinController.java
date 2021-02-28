@@ -1,7 +1,7 @@
 package com.turomas.smartglass.rest;
 
-import com.turomas.smartglass.machineEvent.domain.CuttingMaterial;
-import com.turomas.smartglass.machineEvent.domain.Optimization;
+import com.turomas.smartglass.machineTwin.domain.MaterialDTO;
+import com.turomas.smartglass.machineTwin.domain.OptimizationDTO;
 import com.turomas.smartglass.machineTwin.domain.RatioDTO;
 import com.turomas.smartglass.machineTwin.services.MachineTwinService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -34,7 +34,7 @@ public class MachineTwinController {
   }
 
   @GetMapping("/statistics/materials-usage")
-  public List<CuttingMaterial> getMostUsedMaterials(
+  public List<MaterialDTO> getMostUsedMaterials(
       @RequestParam("machineName") String machineName,
       @RequestParam(name = "startDate") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
           LocalDateTime startDate,
@@ -45,7 +45,7 @@ public class MachineTwinController {
   }
 
   @GetMapping("/statistics/optimizations-history")
-  public List<Optimization> getOptimizationsHistory(
+  public List<OptimizationDTO> getOptimizationsHistory(
       @RequestParam("machineName") String machineName,
       @RequestParam(name = "startDate") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
           LocalDateTime startDate,

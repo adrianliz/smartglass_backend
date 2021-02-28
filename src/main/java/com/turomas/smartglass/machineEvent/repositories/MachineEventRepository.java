@@ -1,8 +1,8 @@
 package com.turomas.smartglass.machineEvent.repositories;
 
-import com.turomas.smartglass.machineEvent.domain.CuttingMaterial;
+import com.turomas.smartglass.machineTwin.domain.MaterialDTO;
 import com.turomas.smartglass.machineEvent.domain.MachineEvent;
-import com.turomas.smartglass.machineEvent.domain.Optimization;
+import com.turomas.smartglass.machineTwin.domain.OptimizationDTO;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -22,7 +22,7 @@ public interface MachineEventRepository extends MongoRepository<MachineEvent, St
         "{$sort: {usedTimes: -1}}",
         "{$project: {name: $_id, usedTimes: 1, _id: 0}}"
       })
-  List<CuttingMaterial> getMostUsedMaterials(
+  List<MaterialDTO> getMostUsedMaterials(
       String machineName, LocalDateTime startDate, LocalDateTime endDate);
 
   @Aggregation(
@@ -32,7 +32,7 @@ public interface MachineEventRepository extends MongoRepository<MachineEvent, St
         "{$sort: {materialsProcessed: -1}}",
         "{$project: {name: '$_id.optimization_name', processName: '$_id.process_name', materialsProcessed: 1, _id: 0}}"
       })
-  List<Optimization> getOptimizationHistory(
+  List<OptimizationDTO> getOptimizationHistory(
       String machineName, LocalDateTime startDate, LocalDateTime endDate);
 
   @Query(value = "{machine: ?0, timestamp: {$gte: ?1, $lt: ?2}}")

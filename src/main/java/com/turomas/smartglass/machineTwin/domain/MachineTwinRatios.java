@@ -20,8 +20,8 @@ public class MachineTwinRatios {
   private long completedProcesses;
   private long abortedProcesses;
 
-  public MachineTwinRatios(String machineTwinName, Period period) {
-    this.machineName = machineTwinName;
+  public MachineTwinRatios(String machineName, Period period) {
+    this.machineName = machineName;
     this.period = period;
     machineActiveSeconds = 0;
     machineBreakdownSeconds = 0;

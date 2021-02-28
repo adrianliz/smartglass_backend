@@ -1,7 +1,5 @@
 package com.turomas.smartglass.machineTwin.domain;
 
-import com.turomas.smartglass.machineEvent.domain.CuttingMaterial;
-import com.turomas.smartglass.machineEvent.domain.Optimization;
 import com.turomas.smartglass.machineEvent.repositories.MachineEventRepository;
 
 import java.util.HashMap;
@@ -34,14 +32,14 @@ public class MachineTwin {
     return getRatiosByPeriod(period).calculateRatios(machineEventRepository);
   }
 
-  public List<CuttingMaterial> getMostUsedMaterials(
+  public List<MaterialDTO> getMostUsedMaterials(
       Period period, MachineEventRepository machineEventRepository) {
 
     return machineEventRepository.getMostUsedMaterials(
         name, period.getStartDate(), period.getEndDate());
   }
 
-  public List<Optimization> getOptimizationsHistory(
+  public List<OptimizationDTO> getOptimizationsHistory(
       Period period, MachineEventRepository machineEventRepository) {
 
     return machineEventRepository.getOptimizationHistory(
