@@ -1,9 +1,11 @@
 package com.turomas.smartglass.machineTwin.domain;
 
+import com.turomas.smartglass.machineEvent.domain.CuttingMaterial;
+import com.turomas.smartglass.machineEvent.domain.Optimization;
 import com.turomas.smartglass.machineEvent.repositories.MachineEventRepository;
-import com.turomas.smartglass.machineTwin.domain.exceptions.InvalidRatio;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MachineTwin {
@@ -26,10 +28,23 @@ public class MachineTwin {
     return machineTwinRatios;
   }
 
-  public RatioDTO calculateRatio(
-      RatioType ratio, Period period, MachineEventRepository machineEventRepository)
-      throws InvalidRatio {
+  public List<RatioDTO> calculateRatios(
+      Period period, MachineEventRepository machineEventRepository) {
 
-    return getRatiosByPeriod(period).calculateRatio(ratio, machineEventRepository);
+    return getRatiosByPeriod(period).calculateRatios(machineEventRepository);
+  }
+
+  public List<CuttingMaterial> getMostUsedMaterials(
+      Period period, MachineEventRepository machineEventRepository) {
+
+    return machineEventRepository.getMostUsedMaterials(
+        name, period.getStartDate(), period.getEndDate());
+  }
+
+  public List<Optimization> getOptimizationsHistory(
+      Period period, MachineEventRepository machineEventRepository) {
+
+    return machineEventRepository.getOptimizationHistory(
+        name, period.getStartDate(), period.getEndDate());
   }
 }

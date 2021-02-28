@@ -2,7 +2,6 @@ package com.turomas.smartglass.rest.exceptions;
 
 import com.turomas.smartglass.machineEvent.services.exceptions.MachineEventNotFound;
 import com.turomas.smartglass.machineTwin.domain.exceptions.InvalidPeriod;
-import com.turomas.smartglass.machineTwin.domain.exceptions.InvalidRatio;
 import com.turomas.smartglass.machineTwin.services.exceptions.MachineTwinNotFound;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,12 +25,6 @@ public class APIExceptionHandler {
 
   @ExceptionHandler(InvalidPeriod.class)
   public ResponseEntity<APIException> handleInvalidPeriod(InvalidPeriod ex) {
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        .body(new APIException(HttpStatus.BAD_REQUEST, ex.getMessage()));
-  }
-
-  @ExceptionHandler(InvalidRatio.class)
-  public ResponseEntity<APIException> handleInvalidRatio(InvalidRatio ex) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body(new APIException(HttpStatus.BAD_REQUEST, ex.getMessage()));
   }

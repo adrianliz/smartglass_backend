@@ -2,9 +2,9 @@ package com.turomas.smartglass.machineTwin.domain;
 
 import com.turomas.smartglass.machineEvent.domain.MachineEvent;
 import com.turomas.smartglass.machineEvent.repositories.MachineEventRepository;
-import com.turomas.smartglass.machineTwin.domain.exceptions.InvalidRatio;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.SortedSet;
 
 import static com.turomas.smartglass.machineTwin.domain.RatioType.*;
@@ -87,7 +87,7 @@ public class MachineTwinRatios {
       availability = (double) machineActiveSeconds / totalTime;
     }
 
-    return new RatioDTO(AVAILABILITY, availability, period);
+    return new RatioDTO(AVAILABILITY, availability);
   }
 
   private RatioDTO calculateEfficiency() {
@@ -98,7 +98,7 @@ public class MachineTwinRatios {
       efficiency = (double) machineWorkingSeconds / totalTime;
     }
 
-    return new RatioDTO(EFFICIENCY, efficiency, period);
+    return new RatioDTO(EFFICIENCY, efficiency);
   }
 
   private RatioDTO calculateEffectiveness() {
@@ -109,23 +109,12 @@ public class MachineTwinRatios {
       effectiveness = (double) completedProcesses / totalProcesses;
     }
 
-    return new RatioDTO(EFFECTIVENESS, effectiveness, period);
+    return new RatioDTO(EFFECTIVENESS, effectiveness);
   }
 
-  public RatioDTO calculateRatio(RatioType ratio, MachineEventRepository machineEventRepository)
-      throws InvalidRatio {
-
+  public List<RatioDTO> calculateRatios(MachineEventRepository machineEventRepository) {
     updateRatios(machineEventRepository);
 
-    switch (ratio) {
-      case AVAILABILITY:
-        return calculateAvailability();
-      case EFFICIENCY:
-        return calculateEfficiency();
-      case EFFECTIVENESS:
-        return calculateEffectiveness();
-    }
-
-    throw new InvalidRatio(ratio);
+    return List.of(calculateAvailability(), calculateEfficiency(), calculateEffectiveness());
   }
 }
