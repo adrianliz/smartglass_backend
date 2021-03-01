@@ -1,8 +1,8 @@
 package com.turomas.smartglass.rest;
 
-import com.turomas.smartglass.machineEvent.domain.MachineEvent;
-import com.turomas.smartglass.machineEvent.services.MachineEventService;
-import com.turomas.smartglass.machineEvent.services.exceptions.MachineEventNotFound;
+import com.turomas.smartglass.events.domain.MachineEvent;
+import com.turomas.smartglass.events.services.MachineEventService;
+import com.turomas.smartglass.events.services.exceptions.MachineEventNotFound;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 

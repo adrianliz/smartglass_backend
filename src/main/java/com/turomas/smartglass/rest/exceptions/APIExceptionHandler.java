@@ -1,8 +1,8 @@
 package com.turomas.smartglass.rest.exceptions;
 
-import com.turomas.smartglass.machineEvent.services.exceptions.MachineEventNotFound;
-import com.turomas.smartglass.machineTwin.domain.exceptions.InvalidPeriod;
-import com.turomas.smartglass.machineTwin.services.exceptions.MachineTwinNotFound;
+import com.turomas.smartglass.events.services.exceptions.MachineEventNotFound;
+import com.turomas.smartglass.twins.domain.exceptions.InvalidPeriod;
+import com.turomas.smartglass.twins.services.exceptions.MachineTwinNotFound;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class APIExceptionHandler {
-
   @ExceptionHandler(MachineEventNotFound.class)
   public ResponseEntity<APIException> handleMachineEventNotFound(MachineEventNotFound ex) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
