@@ -1,35 +1,27 @@
 package com.turomas.smartglass.twins.services;
 
+import com.turomas.smartglass.twins.domain.PeriodType;
 import com.turomas.smartglass.twins.domain.dto.*;
-import com.turomas.smartglass.twins.domain.exceptions.InvalidPeriod;
 import com.turomas.smartglass.twins.services.exceptions.MachineTwinNotFound;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface MachineTwinService {
-  List<RatioDTO> getRatios(String machineName, LocalDateTime startDate, LocalDateTime endDate)
-      throws MachineTwinNotFound, InvalidPeriod;
+  List<RatioDTO> getRatios(String machineName, PeriodType periodType) throws MachineTwinNotFound;
 
-  List<MaterialDTO> getMostUsedMaterials(
-      String machineName, LocalDateTime startDate, LocalDateTime endDate)
-      throws MachineTwinNotFound, InvalidPeriod;
+  List<MaterialDTO> getMostUsedMaterials(String machineName, PeriodType periodType)
+      throws MachineTwinNotFound;
 
-  WorkingStatisticsDTO getWorkingStatistics(
-      String machineName, LocalDateTime startDate, LocalDateTime endDate)
-      throws MachineTwinNotFound, InvalidPeriod;
+  WorkingStatisticsDTO getWorkingStatistics(String machineName, PeriodType periodType)
+      throws MachineTwinNotFound;
 
-  List<OptimizationDTO> getOptimizationsHistory(
-      String machineName, LocalDateTime startDate, LocalDateTime endDate)
-      throws MachineTwinNotFound, InvalidPeriod;
+  List<OptimizationDTO> getOptimizationsHistory(String machineName, PeriodType periodType)
+      throws MachineTwinNotFound;
 
-  ToolInfoDTO getToolInfo(String machineName, LocalDateTime startDate, LocalDateTime endDate)
-      throws MachineTwinNotFound, InvalidPeriod;
+  ToolInfoDTO getToolInfo(String machineName, PeriodType periodType) throws MachineTwinNotFound;
 
-  WheelInfoDTO getWheelInfo(String machineName, LocalDateTime startDate, LocalDateTime endDate)
-      throws MachineTwinNotFound, InvalidPeriod;
+  WheelInfoDTO getWheelInfo(String machineName, PeriodType periodType) throws MachineTwinNotFound;
 
-  List<BreakdownDTO> getBreakdownsOccurred(
-      String machineName, LocalDateTime startDate, LocalDateTime endDate)
-      throws MachineTwinNotFound, InvalidPeriod;
+  List<BreakdownDTO> getBreakdownsOccurred(String machineName, PeriodType periodType)
+      throws MachineTwinNotFound;
 }

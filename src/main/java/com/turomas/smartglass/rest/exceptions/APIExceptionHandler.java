@@ -27,4 +27,10 @@ public class APIExceptionHandler {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body(new APIException(HttpStatus.BAD_REQUEST, ex.getMessage()));
   }
+
+  @ExceptionHandler(InvalidPeriodType.class)
+  public ResponseEntity<APIException> handleInvalidPeriodType(InvalidPeriodType ex) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+      .body(new APIException(HttpStatus.BAD_REQUEST, ex.getMessage()));
+  }
 }

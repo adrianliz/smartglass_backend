@@ -2,14 +2,13 @@ package com.turomas.smartglass.twins.services;
 
 import com.turomas.smartglass.events.repositories.MachineEventRepository;
 import com.turomas.smartglass.twins.domain.MachineTwin;
-import com.turomas.smartglass.twins.domain.Period;
+import com.turomas.smartglass.twins.domain.PeriodType;
 import com.turomas.smartglass.twins.domain.dto.*;
 import com.turomas.smartglass.twins.domain.exceptions.InvalidPeriod;
 import com.turomas.smartglass.twins.repositories.MachineTwinRepository;
 import com.turomas.smartglass.twins.services.exceptions.MachineTwinNotFound;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -31,67 +30,58 @@ public class MachineTwinProxy implements MachineTwinService {
   }
 
   @Override
-  public List<RatioDTO> getRatios(
-      String machineName, LocalDateTime startDate, LocalDateTime endDate)
+  public List<RatioDTO> getRatios(String machineName, PeriodType periodType)
       throws MachineTwinNotFound, InvalidPeriod {
 
     MachineTwin machineTwin = getMachineTwin(machineName);
-    return machineTwin.calculateRatios(new Period(startDate, endDate), machineEventRepository);
+    return machineTwin.calculateRatios(periodType.getPeriod(), machineEventRepository);
   }
 
   @Override
-  public List<MaterialDTO> getMostUsedMaterials(
-      String machineName, LocalDateTime startDate, LocalDateTime endDate)
+  public List<MaterialDTO> getMostUsedMaterials(String machineName, PeriodType periodType)
       throws MachineTwinNotFound, InvalidPeriod {
 
     MachineTwin machineTwin = getMachineTwin(machineName);
-    return machineTwin.getMostUsedMaterials(new Period(startDate, endDate), machineEventRepository);
+    return machineTwin.getMostUsedMaterials(periodType.getPeriod(), machineEventRepository);
   }
 
   @Override
-  public WorkingStatisticsDTO getWorkingStatistics(
-      String machineName, LocalDateTime startDate, LocalDateTime endDate)
-      throws MachineTwinNotFound, InvalidPeriod {
+  public WorkingStatisticsDTO getWorkingStatistics(String machineName, PeriodType periodType)
+      throws MachineTwinNotFound {
 
     MachineTwin machineTwin = getMachineTwin(machineName);
-    return machineTwin.calculateWorkingStatistics(
-        new Period(startDate, endDate), machineEventRepository);
+    return machineTwin.calculateWorkingStatistics(periodType.getPeriod(), machineEventRepository);
   }
 
   @Override
-  public List<OptimizationDTO> getOptimizationsHistory(
-      String machineName, LocalDateTime startDate, LocalDateTime endDate)
-      throws MachineTwinNotFound, InvalidPeriod {
+  public List<OptimizationDTO> getOptimizationsHistory(String machineName, PeriodType periodType)
+      throws MachineTwinNotFound {
 
     MachineTwin machineTwin = getMachineTwin(machineName);
-    return machineTwin.getOptimizationsHistory(
-        new Period(startDate, endDate), machineEventRepository);
+    return machineTwin.getOptimizationsHistory(periodType.getPeriod(), machineEventRepository);
   }
 
   @Override
-  public ToolInfoDTO getToolInfo(String machineName, LocalDateTime startDate, LocalDateTime endDate)
-      throws MachineTwinNotFound, InvalidPeriod {
+  public ToolInfoDTO getToolInfo(String machineName, PeriodType periodType)
+      throws MachineTwinNotFound {
 
     MachineTwin machineTwin = getMachineTwin(machineName);
-    return machineTwin.getToolInfo(new Period(startDate, endDate), machineEventRepository);
+    return machineTwin.getToolInfo(periodType.getPeriod(), machineEventRepository);
   }
 
   @Override
-  public WheelInfoDTO getWheelInfo(
-      String machineName, LocalDateTime startDate, LocalDateTime endDate)
-      throws MachineTwinNotFound, InvalidPeriod {
+  public WheelInfoDTO getWheelInfo(String machineName, PeriodType periodType)
+      throws MachineTwinNotFound {
 
     MachineTwin machineTwin = getMachineTwin(machineName);
-    return machineTwin.getWheelInfo(new Period(startDate, endDate), machineEventRepository);
+    return machineTwin.getWheelInfo(periodType.getPeriod(), machineEventRepository);
   }
 
   @Override
-  public List<BreakdownDTO> getBreakdownsOccurred(
-      String machineName, LocalDateTime startDate, LocalDateTime endDate)
-      throws MachineTwinNotFound, InvalidPeriod {
+  public List<BreakdownDTO> getBreakdownsOccurred(String machineName, PeriodType periodType)
+      throws MachineTwinNotFound {
 
     MachineTwin machineTwin = getMachineTwin(machineName);
-    return machineTwin.getBreakdownsOccurred(
-        new Period(startDate, endDate), machineEventRepository);
+    return machineTwin.getBreakdownsOccurred(periodType.getPeriod(), machineEventRepository);
   }
 }
