@@ -18,14 +18,9 @@ public class MachineEventController {
     this.machineEventService = machineEventService;
   }
 
-  @GetMapping("")
-  public SortedSet<MachineEvent> getMachineEvents() {
-    return machineEventService.getMachineEvents();
-  }
-
-  @GetMapping("/{eventId}")
-  public MachineEvent getMachineEvent(@PathVariable String eventId) throws MachineEventNotFound {
-    return machineEventService.getMachineEvent(eventId);
+  @GetMapping("/{machineName}")
+  public SortedSet<MachineEvent> getMachineEvents(String machineName) {
+    return machineEventService.getMachineEvents(machineName);
   }
 
   @GetMapping("/search")

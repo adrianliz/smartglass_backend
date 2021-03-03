@@ -11,11 +11,11 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EventParams {
-  @Field("optimization_name")
-  private String optimizationName;
-
   @Field("process_name")
   private String processName;
+
+  @Field("optimization_name")
+  private String optimizationName;
 
   @Field("cut_plan_id")
   private int cutPlanId;

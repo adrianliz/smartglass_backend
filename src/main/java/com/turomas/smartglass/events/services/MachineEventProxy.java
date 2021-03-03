@@ -18,8 +18,8 @@ public class MachineEventProxy implements MachineEventService {
   }
 
   @Override
-  public SortedSet<MachineEvent> getMachineEvents() {
-    return machineEventRepository.getMachineEvents();
+  public SortedSet<MachineEvent> getMachineEvents(String machineName) {
+    return machineEventRepository.getMachineEvents(machineName);
   }
 
   @Override

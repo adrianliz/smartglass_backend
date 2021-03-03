@@ -9,11 +9,10 @@ import java.util.List;
 // TODO replace with ontology model
 @Repository
 public class OWLMachineTwinRepository implements MachineTwinRepository {
-  private MachineTwin machineTwin = null;
-  private MachineEventRepository machineEventRepository;
+  private final MachineTwin machineTwin;
 
   public OWLMachineTwinRepository(MachineEventRepository machineEventRepository) {
-    this.machineEventRepository = machineEventRepository;
+    machineTwin = new MachineTwin("Turomas1", machineEventRepository);
   }
 
   @Override
@@ -23,8 +22,6 @@ public class OWLMachineTwinRepository implements MachineTwinRepository {
 
   @Override
   public MachineTwin getMachineTwin(String name) {
-    if (machineTwin == null) machineTwin = new MachineTwin("Turomas1", machineEventRepository);
-
     return machineTwin;
   }
 }

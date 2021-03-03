@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.SortedSet;
 
 public interface MachineEventRepository extends MongoRepository<MachineEvent, String> {
-  @Query(value = "{}")
-  SortedSet<MachineEvent> getMachineEvents();
+  @Query(value = "{machine: ?0}")
+  SortedSet<MachineEvent> getMachineEvents(String machineName);
 
   @Aggregation(
       pipeline = {
@@ -63,6 +63,9 @@ public interface MachineEventRepository extends MongoRepository<MachineEvent, St
       })
   List<BreakdownDTO> getBreakdownsOccurred(
       String machineName, LocalDateTime startDate, LocalDateTime endDate);
+
+  @Query(value = "{machine: ?0, timestamp: {$gt: ?1}}")
+  SortedSet<MachineEvent> searchEventsAfter(String machineName, LocalDateTime startDate);
 
   @Query(value = "{machine: ?0, timestamp: {$gte: ?1, $lt: ?2}}")
   SortedSet<MachineEvent> searchEventsBetween(

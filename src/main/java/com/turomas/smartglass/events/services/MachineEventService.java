@@ -9,7 +9,7 @@ import java.util.SortedSet;
 public interface MachineEventService {
   MachineEvent getMachineEvent(String eventId) throws MachineEventNotFound;
 
-  SortedSet<MachineEvent> getMachineEvents();
+  SortedSet<MachineEvent> getMachineEvents(String machineName);
 
   SortedSet<MachineEvent> searchBy(
       String machineName, LocalDateTime startDate, LocalDateTime endDate);

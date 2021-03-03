@@ -1,7 +1,9 @@
 package com.turomas.smartglass.events.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.turomas.smartglass.twins.domain.DateRange;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,7 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 public class MachineEvent implements Comparable<MachineEvent> {
-  @Id private final String id;
+  @Id @EqualsAndHashCode.Include private final String id;
 
   @Field("class")
   private final EventClassification classification;
@@ -30,9 +32,9 @@ public class MachineEvent implements Comparable<MachineEvent> {
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private final LocalDateTime timestamp;
 
-  @Override
-  public int compareTo(MachineEvent machineEvent) {
-    return this.timestamp.compareTo(machineEvent.timestamp);
+  public boolean happenedBetween(DateRange dateRange) {
+    return ((timestamp.compareTo(dateRange.getStartDate()) > 0)
+        && (timestamp.compareTo(dateRange.getEndDate()) < 0));
   }
 
   public boolean machineIsInBreakdown() {
@@ -46,15 +48,15 @@ public class MachineEvent implements Comparable<MachineEvent> {
   }
 
   public boolean machineCompletesProcess(MachineEvent machineEvent) {
-    return (type.equals(EventType.END_PROCESS)
+    return (machineEvent.machineStartsProcess()
+        && type.equals(EventType.END_PROCESS)
         && params != null
         && machineEvent.params != null
         && params.equals(machineEvent.params));
   }
 
-  public boolean machineIsAvailable() {
-    return (type.equals(EventType.END_PROCESS)
-        || type.equals(EventType.OK)
-        || type.equals(EventType.POWER_ON));
+  @Override
+  public int compareTo(MachineEvent machineEvent) {
+    return this.timestamp.compareTo(machineEvent.timestamp);
   }
 }
