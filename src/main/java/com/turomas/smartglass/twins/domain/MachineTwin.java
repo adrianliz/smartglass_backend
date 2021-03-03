@@ -9,62 +9,54 @@ import java.util.Map;
 
 public class MachineTwin {
   private final String name;
-  private final Map<Period, MachineTwinRatios> ratiosByPeriod;
+  private final MachineEventRepository machineEventRepository;
+  private final Map<DateRange, MachineTwinRatios> ratios;
 
-  public MachineTwin(String name) {
+  public MachineTwin(String name, MachineEventRepository machineEventRepository) {
     this.name = name;
-    ratiosByPeriod = new HashMap<>();
+    this.machineEventRepository = machineEventRepository;
+    ratios = new HashMap<>();
   }
 
-  private MachineTwinRatios getRatiosByPeriod(Period period) {
-    MachineTwinRatios machineTwinRatios = ratiosByPeriod.get(period);
+  private MachineTwinRatios getRatios(DateRange dateRange) {
+    MachineTwinRatios machineTwinRatios = ratios.get(dateRange);
 
     if (machineTwinRatios == null) {
-      machineTwinRatios = new MachineTwinRatios(name, period);
-      ratiosByPeriod.put(period, machineTwinRatios);
+      machineTwinRatios = new MachineTwinRatios(name, dateRange);
+      ratios.put(dateRange, machineTwinRatios);
     }
 
     return machineTwinRatios;
   }
 
-  public List<RatioDTO> calculateRatios(
-      Period period, MachineEventRepository machineEventRepository) {
-
-    return getRatiosByPeriod(period).calculateRatios(machineEventRepository);
+  public List<RatioDTO> calculateRatios(DateRange dateRange) {
+    return getRatios(dateRange).calculateRatios(machineEventRepository);
   }
 
-  public WorkingStatisticsDTO calculateWorkingStatistics(
-      Period period, MachineEventRepository machineEventRepository) {
-
-    return getRatiosByPeriod(period).calculateWorkingStatistics(machineEventRepository);
+  public WorkingStatisticsDTO calculateWorkingStatistics(DateRange dateRange) {
+    return getRatios(dateRange).calculateWorkingStatistics(machineEventRepository);
   }
 
-  public List<MaterialDTO> getMostUsedMaterials(
-      Period period, MachineEventRepository machineEventRepository) {
-
+  public List<MaterialDTO> getMostUsedMaterials(DateRange dateRange) {
     return machineEventRepository.getMostUsedMaterials(
-        name, period.getStartDate(), period.getEndDate());
+        name, dateRange.getStartDate(), dateRange.getEndDate());
   }
 
-  public List<OptimizationDTO> getOptimizationsHistory(
-      Period period, MachineEventRepository machineEventRepository) {
-
+  public List<OptimizationDTO> getOptimizationsHistory(DateRange dateRange) {
     return machineEventRepository.getOptimizationHistory(
-        name, period.getStartDate(), period.getEndDate());
+        name, dateRange.getStartDate(), dateRange.getEndDate());
   }
 
-  public ToolInfoDTO getToolInfo(Period period, MachineEventRepository machineEventRepository) {
-    return machineEventRepository.getToolInfo(name, period.getStartDate(), period.getEndDate());
+  public ToolInfoDTO getToolInfo(DateRange dateRange) {
+    return machineEventRepository.getToolInfo(name, dateRange.getStartDate(), dateRange.getEndDate());
   }
 
-  public WheelInfoDTO getWheelInfo(Period period, MachineEventRepository machineEventRepository) {
-    return machineEventRepository.getWheelInfo(
-        name, period.getStartDate(), period.getEndDate());
+  public WheelInfoDTO getWheelInfo(DateRange dateRange) {
+    return machineEventRepository.getWheelInfo(name, dateRange.getStartDate(), dateRange.getEndDate());
   }
 
-  public List<BreakdownDTO> getBreakdownsOccurred(
-      Period period, MachineEventRepository machineEventRepository) {
+  public List<BreakdownDTO> getBreakdownsOccurred(DateRange dateRange) {
     return machineEventRepository.getBreakdownsOccurred(
-        name, period.getStartDate(), period.getEndDate());
+        name, dateRange.getStartDate(), dateRange.getEndDate());
   }
 }

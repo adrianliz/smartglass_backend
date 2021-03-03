@@ -1,5 +1,6 @@
 package com.turomas.smartglass.twins.repositories;
 
+import com.turomas.smartglass.events.repositories.MachineEventRepository;
 import com.turomas.smartglass.twins.domain.MachineTwin;
 import org.springframework.stereotype.Repository;
 
@@ -8,7 +9,12 @@ import java.util.List;
 // TODO replace with ontology model
 @Repository
 public class OWLMachineTwinRepository implements MachineTwinRepository {
-  MachineTwin machineTwin = null;
+  private MachineTwin machineTwin = null;
+  private MachineEventRepository machineEventRepository;
+
+  public OWLMachineTwinRepository(MachineEventRepository machineEventRepository) {
+    this.machineEventRepository = machineEventRepository;
+  }
 
   @Override
   public List<MachineTwin> getMachineTwins() {
@@ -17,7 +23,7 @@ public class OWLMachineTwinRepository implements MachineTwinRepository {
 
   @Override
   public MachineTwin getMachineTwin(String name) {
-    if (machineTwin == null) machineTwin = new MachineTwin("Turomas1");
+    if (machineTwin == null) machineTwin = new MachineTwin("Turomas1", machineEventRepository);
 
     return machineTwin;
   }

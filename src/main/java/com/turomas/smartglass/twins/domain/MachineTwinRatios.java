@@ -13,7 +13,7 @@ import static com.turomas.smartglass.twins.domain.dto.RatioType.*;
 
 public class MachineTwinRatios {
   private final String machineName;
-  private final Period period;
+  private final DateRange dateRange;
   private MachineEvent lastEventEvaluated;
   private long machineActiveSeconds;
   private long machineBreakdownSeconds;
@@ -22,9 +22,9 @@ public class MachineTwinRatios {
   private long completedProcesses;
   private long abortedProcesses;
 
-  public MachineTwinRatios(String machineName, Period period) {
+  public MachineTwinRatios(String machineName, DateRange dateRange) {
     this.machineName = machineName;
-    this.period = period;
+    this.dateRange = dateRange;
     machineActiveSeconds = 0;
     machineBreakdownSeconds = 0;
     machineWorkingSeconds = 0;
@@ -39,11 +39,12 @@ public class MachineTwinRatios {
 
     if (lastEventEvaluated != null) {
       newEventsProduced =
-          machineEventRepository.searchBy(
-              machineName, lastEventEvaluated.getTimestamp(), period.getEndDate());
+          machineEventRepository.searchEventsBetween(
+              machineName, lastEventEvaluated.getTimestamp(), dateRange.getEndDate());
     } else {
       newEventsProduced =
-          machineEventRepository.searchBy(machineName, period.getStartDate(), period.getEndDate());
+          machineEventRepository.searchEventsBetween(
+              machineName, dateRange.getStartDate(), dateRange.getEndDate());
 
       if (!newEventsProduced.isEmpty()) {
         lastEventEvaluated = newEventsProduced.first();
@@ -81,50 +82,18 @@ public class MachineTwinRatios {
     }
   }
 
-  private RatioDTO calculateAvailability() {
-    long totalTime = machineActiveSeconds + machineBreakdownSeconds;
-    double availability = 0;
-
-    if (totalTime > 0) {
-      availability = (double) machineActiveSeconds / totalTime;
-    }
-
-    return new RatioDTO(AVAILABILITY, availability);
-  }
-
-  private RatioDTO calculateEfficiency() {
-    long totalTime = machineWorkingSeconds + wastedSeconds;
-    double efficiency = 0;
-
-    if (totalTime > 0) {
-      efficiency = (double) machineWorkingSeconds / totalTime;
-    }
-
-    return new RatioDTO(EFFICIENCY, efficiency);
-  }
-
-  private RatioDTO calculateEffectiveness() {
-    long totalProcesses = completedProcesses + abortedProcesses;
-    double effectiveness = 0;
-
-    if (totalProcesses > 0) {
-      effectiveness = (double) completedProcesses / totalProcesses;
-    }
-
-    return new RatioDTO(EFFECTIVENESS, effectiveness);
-  }
-
   public List<RatioDTO> calculateRatios(MachineEventRepository machineEventRepository) {
     updateRatios(machineEventRepository);
-
-    return List.of(calculateAvailability(), calculateEfficiency(), calculateEffectiveness());
+    return List.of(
+        new RatioDTO(AVAILABILITY, machineActiveSeconds, machineBreakdownSeconds),
+        new RatioDTO(EFFICIENCY, machineWorkingSeconds, wastedSeconds),
+        new RatioDTO(EFFECTIVENESS, completedProcesses, abortedProcesses));
   }
 
   public WorkingStatisticsDTO calculateWorkingStatistics(
       MachineEventRepository machineEventRepository) {
 
     updateRatios(machineEventRepository);
-
     return new WorkingStatisticsDTO(machineWorkingSeconds, machineActiveSeconds);
   }
 }

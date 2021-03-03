@@ -35,6 +35,6 @@ public class MachineEventProxy implements MachineEventService {
       @NonNull LocalDateTime startDate,
       @NonNull LocalDateTime endDate) {
 
-    return machineEventRepository.searchBy(machineName, startDate, endDate);
+    return machineEventRepository.searchEventsBetween(machineName, startDate, endDate);
   }
 }

@@ -65,6 +65,6 @@ public interface MachineEventRepository extends MongoRepository<MachineEvent, St
       String machineName, LocalDateTime startDate, LocalDateTime endDate);
 
   @Query(value = "{machine: ?0, timestamp: {$gte: ?1, $lt: ?2}}")
-  SortedSet<MachineEvent> searchBy(
+  SortedSet<MachineEvent> searchEventsBetween(
       String machineName, LocalDateTime startDate, LocalDateTime endDate);
 }

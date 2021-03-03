@@ -1,27 +1,27 @@
 package com.turomas.smartglass.twins.services;
 
-import com.turomas.smartglass.twins.domain.PeriodType;
+import com.turomas.smartglass.twins.domain.Period;
 import com.turomas.smartglass.twins.domain.dto.*;
 import com.turomas.smartglass.twins.services.exceptions.MachineTwinNotFound;
 
 import java.util.List;
 
 public interface MachineTwinService {
-  List<RatioDTO> getRatios(String machineName, PeriodType periodType) throws MachineTwinNotFound;
+  List<RatioDTO> getRatios(String machineName, Period period) throws MachineTwinNotFound;
 
-  List<MaterialDTO> getMostUsedMaterials(String machineName, PeriodType periodType)
+  List<MaterialDTO> getMostUsedMaterials(String machineName, Period period)
       throws MachineTwinNotFound;
 
-  WorkingStatisticsDTO getWorkingStatistics(String machineName, PeriodType periodType)
+  WorkingStatisticsDTO getWorkingStatistics(String machineName, Period period)
       throws MachineTwinNotFound;
 
-  List<OptimizationDTO> getOptimizationsHistory(String machineName, PeriodType periodType)
+  List<OptimizationDTO> getOptimizationsHistory(String machineName, Period period)
       throws MachineTwinNotFound;
 
-  ToolInfoDTO getToolInfo(String machineName, PeriodType periodType) throws MachineTwinNotFound;
+  ToolInfoDTO getToolInfo(String machineName, Period period) throws MachineTwinNotFound;
 
-  WheelInfoDTO getWheelInfo(String machineName, PeriodType periodType) throws MachineTwinNotFound;
+  WheelInfoDTO getWheelInfo(String machineName, Period period) throws MachineTwinNotFound;
 
-  List<BreakdownDTO> getBreakdownsOccurred(String machineName, PeriodType periodType)
+  List<BreakdownDTO> getBreakdownsOccurred(String machineName, Period period)
       throws MachineTwinNotFound;
 }
