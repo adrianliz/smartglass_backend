@@ -1,6 +1,6 @@
-package com.turomas.smartglass.rest.converters;
+package com.turomas.smartglass.twins.rest.converters;
 
-import com.turomas.smartglass.rest.exceptions.InvalidPeriodType;
+import com.turomas.smartglass.twins.rest.exceptions.InvalidPeriodType;
 import com.turomas.smartglass.twins.domain.Period;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;

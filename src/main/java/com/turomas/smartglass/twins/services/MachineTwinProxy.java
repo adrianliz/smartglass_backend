@@ -7,6 +7,7 @@ import com.turomas.smartglass.twins.repositories.MachineTwinRepository;
 import com.turomas.smartglass.twins.services.exceptions.MachineTwinNotFound;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -25,13 +26,13 @@ public class MachineTwinProxy implements MachineTwinService {
   }
 
   @Override
-  public List<RatioDTO> getRatios(String machineName, Period period) throws MachineTwinNotFound {
+  public Collection<RatioDTO> getRatios(String machineName, Period period) throws MachineTwinNotFound {
     MachineTwin machineTwin = getMachineTwin(machineName);
     return machineTwin.calculateRatios(period.getPeriod());
   }
 
   @Override
-  public List<MaterialDTO> getMostUsedMaterials(String machineName, Period period)
+  public Collection<MaterialDTO> getMostUsedMaterials(String machineName, Period period)
       throws MachineTwinNotFound {
 
     MachineTwin machineTwin = getMachineTwin(machineName);
@@ -47,7 +48,7 @@ public class MachineTwinProxy implements MachineTwinService {
   }
 
   @Override
-  public List<OptimizationDTO> getOptimizationsHistory(String machineName, Period period)
+  public Collection<OptimizationDTO> getOptimizationsHistory(String machineName, Period period)
       throws MachineTwinNotFound {
 
     MachineTwin machineTwin = getMachineTwin(machineName);
@@ -67,7 +68,7 @@ public class MachineTwinProxy implements MachineTwinService {
   }
 
   @Override
-  public List<BreakdownDTO> getBreakdownsOccurred(String machineName, Period period)
+  public Collection<BreakdownDTO> getBreakdownsOccurred(String machineName, Period period)
       throws MachineTwinNotFound {
 
     MachineTwin machineTwin = getMachineTwin(machineName);

@@ -1,4 +1,4 @@
-package com.turomas.smartglass.rest.exceptions;
+package com.turomas.smartglass.twins.rest.exceptions;
 
 import com.turomas.smartglass.twins.domain.Period;
 

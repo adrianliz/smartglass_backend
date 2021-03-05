@@ -14,7 +14,7 @@ public class RatioDTO {
     if (denominator > 0) {
       value = (double) firstMeasure / denominator;
     } else {
-      value = 0;
+      value = Double.MAX_VALUE; // Preguntar
     }
   }
 }

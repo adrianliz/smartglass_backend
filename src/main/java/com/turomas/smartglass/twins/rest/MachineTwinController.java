@@ -1,4 +1,4 @@
-package com.turomas.smartglass.rest;
+package com.turomas.smartglass.twins.rest;
 
 import com.turomas.smartglass.twins.domain.Period;
 import com.turomas.smartglass.twins.domain.dto.*;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Collection;
 
 @RestController
 @RequestMapping("/twins")
@@ -20,7 +20,7 @@ public class MachineTwinController {
   }
 
   @GetMapping("/ratios")
-  public List<RatioDTO> getRatios(
+  public Collection<RatioDTO> getRatios(
       @RequestParam("machineName") String machineName,
       @RequestParam(name = "period") Period period) {
 
@@ -28,7 +28,7 @@ public class MachineTwinController {
   }
 
   @GetMapping("/statistics/materials-usage")
-  public List<MaterialDTO> getMostUsedMaterials(
+  public Collection<MaterialDTO> getMostUsedMaterials(
       @RequestParam("machineName") String machineName,
       @RequestParam(name = "period") Period period) {
 
@@ -44,7 +44,7 @@ public class MachineTwinController {
   }
 
   @GetMapping("/statistics/optimizations-history")
-  public List<OptimizationDTO> getOptimizationsHistory(
+  public Collection<OptimizationDTO> getOptimizationsHistory(
       @RequestParam("machineName") String machineName,
       @RequestParam(name = "period") Period period) {
 
@@ -68,7 +68,7 @@ public class MachineTwinController {
   }
 
   @GetMapping("/statistics/breakdowns")
-  public List<BreakdownDTO> getBreakdownsOccurred(
+  public Collection<BreakdownDTO> getBreakdownsOccurred(
       @RequestParam("machineName") String machineName,
       @RequestParam(name = "period") Period period) {
 

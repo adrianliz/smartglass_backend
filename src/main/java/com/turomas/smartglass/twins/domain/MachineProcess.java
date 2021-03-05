@@ -2,7 +2,6 @@ package com.turomas.smartglass.twins.domain;
 
 import com.turomas.smartglass.events.domain.MachineEvent;
 import com.turomas.smartglass.twins.domain.exceptions.InvalidMachineProcess;
-import lombok.EqualsAndHashCode;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -15,49 +14,50 @@ public class MachineProcess implements Comparable<MachineProcess> {
   }
 
   private ProcessState state;
-  @EqualsAndHashCode.Include private final MachineEvent startEvent;
-  private MachineEvent endEvent;
+  private final MachineEvent startProcessEvent;
+  private MachineEvent endProcessEvent;
 
-  public MachineProcess(MachineEvent startEvent) throws InvalidMachineProcess {
-    if (startEvent.machineStartsProcess()) {
-      this.startEvent = startEvent; // TODO validate if is a start_process event
+  public MachineProcess(MachineEvent startProcessEvent) throws InvalidMachineProcess {
+    if (startProcessEvent.machineStartsProcess()) {
+      this.startProcessEvent = startProcessEvent;
       state = ProcessState.IN_PROGRESS;
     } else {
-      throw new InvalidMachineProcess(startEvent);
+      throw new InvalidMachineProcess(startProcessEvent);
     }
   }
 
   public LocalDateTime getEndDate() {
-    return endEvent.getTimestamp();
+    return endProcessEvent.getTimestamp();
   }
 
   public void update(MachineEvent event) {
     if (inProgress()) {
-      if (event.machineCompletesProcess(startEvent)) {
+      if (event.machineCompletesProcess(startProcessEvent)) {
         state = ProcessState.COMPLETED;
-        endEvent = event;
+        endProcessEvent = event;
       } else if (event.machineIsInBreakdown()) {
         state = ProcessState.ABORTED;
-        endEvent = event;
+        endProcessEvent = event;
       }
     }
   }
 
   public long workingSeconds() {
     if (!inProgress()) {
-      return Duration.between(startEvent.getTimestamp(), endEvent.getTimestamp()).getSeconds();
+      return Duration.between(startProcessEvent.getTimestamp(), endProcessEvent.getTimestamp())
+          .getSeconds();
     }
 
-    return 0;
+    return 0; // Preguntar
   }
 
   public long wastedSeconds(MachineProcess previousProcess) {
     if (previousProcess != null
         && !previousProcess.inProgress()
-        && !inProgress()
         && this.compareTo(previousProcess) > 0) {
 
-      return Duration.between(previousProcess.endEvent.getTimestamp(), startEvent.getTimestamp())
+      return Duration.between(
+              previousProcess.endProcessEvent.getTimestamp(), startProcessEvent.getTimestamp())
           .getSeconds();
     }
 
@@ -78,7 +78,7 @@ public class MachineProcess implements Comparable<MachineProcess> {
 
   public boolean startsBetween(DateRange dateRange) {
     if (dateRange != null) {
-      LocalDateTime startTimestamp = startEvent.getTimestamp();
+      LocalDateTime startTimestamp = startProcessEvent.getTimestamp();
 
       return ((startTimestamp.compareTo(dateRange.getStartDate()) > 0)
           && (startTimestamp.compareTo(dateRange.getEndDate()) < 0));
@@ -89,6 +89,6 @@ public class MachineProcess implements Comparable<MachineProcess> {
 
   @Override
   public int compareTo(MachineProcess machineProcess) {
-    return startEvent.getTimestamp().compareTo(machineProcess.startEvent.getTimestamp());
+    return startProcessEvent.compareTo(machineProcess.startProcessEvent);
   }
 }

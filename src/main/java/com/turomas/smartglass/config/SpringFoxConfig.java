@@ -13,7 +13,7 @@ public class SpringFoxConfig {
   public Docket api() {
     return new Docket(DocumentationType.SWAGGER_2)
         .select()
-        .apis(RequestHandlerSelectors.basePackage("com.turomas.smartglass.rest"))
+        .apis(RequestHandlerSelectors.basePackage("com.turomas.smartglass.twins.rest"))
         .paths(PathSelectors.any())
         .build();
   }

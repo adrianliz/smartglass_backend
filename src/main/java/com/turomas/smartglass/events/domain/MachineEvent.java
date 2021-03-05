@@ -1,6 +1,5 @@
 package com.turomas.smartglass.events.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.turomas.smartglass.twins.domain.DateRange;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -29,7 +28,6 @@ public class MachineEvent implements Comparable<MachineEvent> {
   @Field("params")
   private final EventParams params;
 
-  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private final LocalDateTime timestamp;
 
   public boolean happenedBetween(DateRange dateRange) {
@@ -48,7 +46,8 @@ public class MachineEvent implements Comparable<MachineEvent> {
   }
 
   public boolean machineCompletesProcess(MachineEvent machineEvent) {
-    return (machineEvent.machineStartsProcess()
+    return (machineEvent != null
+        && machineEvent.machineStartsProcess()
         && type.equals(EventType.END_PROCESS)
         && params != null
         && machineEvent.params != null
@@ -57,6 +56,6 @@ public class MachineEvent implements Comparable<MachineEvent> {
 
   @Override
   public int compareTo(MachineEvent machineEvent) {
-    return this.timestamp.compareTo(machineEvent.timestamp);
+    return timestamp.compareTo(machineEvent.timestamp);
   }
 }

@@ -1,6 +1,6 @@
 package com.turomas.smartglass.twins.repositories;
 
-import com.turomas.smartglass.events.repositories.MachineEventRepository;
+import com.turomas.smartglass.events.services.MachineEventService;
 import com.turomas.smartglass.twins.domain.MachineTwin;
 import org.springframework.stereotype.Repository;
 
@@ -11,8 +11,8 @@ import java.util.List;
 public class OWLMachineTwinRepository implements MachineTwinRepository {
   private final MachineTwin machineTwin;
 
-  public OWLMachineTwinRepository(MachineEventRepository machineEventRepository) {
-    machineTwin = new MachineTwin("Turomas1", machineEventRepository);
+  public OWLMachineTwinRepository(MachineEventService machineEventService) {
+    machineTwin = new MachineTwin("Turomas1", machineEventService);
   }
 
   @Override

@@ -4,8 +4,8 @@ import com.turomas.smartglass.events.domain.MachineEvent;
 import com.turomas.smartglass.twins.domain.dto.RatioDTO;
 
 import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
-import java.util.SortedSet;
 
 import static com.turomas.smartglass.twins.domain.dto.RatioType.*;
 
@@ -30,23 +30,25 @@ public class MachineRatios {
     abortedProcesses = 0;
   }
 
-  private void update(SortedSet<MachineEvent> events, SortedSet<MachineProcess> processes) {
+  private void update(Collection<MachineEvent> events, Collection<MachineProcess> processes) {
     if (lastEventEvaluated != null) {
-      DateRange dateRange = new DateRange(lastEventEvaluated.getTimestamp(), this.dateRange.getEndDate());
+      DateRange dateRange =
+          new DateRange(lastEventEvaluated.getTimestamp(), this.dateRange.getEndDate());
       events.stream().filter(event -> event.happenedBetween(dateRange)).forEach(this::update);
     } else {
       events.stream().filter(event -> event.happenedBetween(dateRange)).forEach(this::update);
     }
 
     if (lastProcessEvaluated != null) {
-      DateRange dateRange = new DateRange(lastProcessEvaluated.getEndDate(), this.dateRange.getEndDate());
+      DateRange dateRange =
+          new DateRange(lastProcessEvaluated.getEndDate(), this.dateRange.getEndDate());
       processes.stream()
-        .filter(process -> process.startsBetween(dateRange) && !process.inProgress())
-        .forEach(this::update);
+          .filter(process -> process.startsBetween(dateRange) && !process.inProgress())
+          .forEach(this::update);
     } else {
       processes.stream()
-        .filter(process -> process.startsBetween(dateRange) && !process.inProgress())
-        .forEach(this::update);
+          .filter(process -> process.startsBetween(dateRange) && !process.inProgress())
+          .forEach(this::update);
     }
   }
 
@@ -81,8 +83,8 @@ public class MachineRatios {
     lastProcessEvaluated = process;
   }
 
-  public List<RatioDTO> calculate(
-      SortedSet<MachineEvent> events, SortedSet<MachineProcess> processes) {
+  public Collection<RatioDTO> calculate(
+      Collection<MachineEvent> events, Collection<MachineProcess> processes) {
 
     update(events, processes);
 
