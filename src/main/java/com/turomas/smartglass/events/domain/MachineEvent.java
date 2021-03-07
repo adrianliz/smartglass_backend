@@ -1,6 +1,5 @@
 package com.turomas.smartglass.events.domain;
 
-import com.turomas.smartglass.twins.domain.DateRange;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,9 +15,6 @@ import java.time.LocalDateTime;
 public class MachineEvent implements Comparable<MachineEvent> {
   @Id @EqualsAndHashCode.Include private final String id;
 
-  @Field("class")
-  private final EventClassification classification;
-
   @Field("type")
   private final EventType type;
 
@@ -28,17 +24,17 @@ public class MachineEvent implements Comparable<MachineEvent> {
   @Field("params")
   private final EventParams params;
 
+  @Field("error_name")
+  private final String errorName;
+
   private final LocalDateTime timestamp;
 
-  public boolean happenedBetween(DateRange dateRange) {
-    return ((timestamp.compareTo(dateRange.getStartDate()) > 0)
-        && (timestamp.compareTo(dateRange.getEndDate()) < 0));
+  public boolean machineIsInBreakdown() {
+    return type.equals(EventType.ERROR);
   }
 
-  public boolean machineIsInBreakdown() {
-    return (type.equals(EventType.ERROR)
-        || type.equals(EventType.RESETTING)
-        || type.equals(EventType.POWER_OFF));
+  public boolean machineIsRearmed() {
+    return type.equals(EventType.OK);
   }
 
   public boolean machineStartsProcess() {
@@ -46,12 +42,12 @@ public class MachineEvent implements Comparable<MachineEvent> {
   }
 
   public boolean machineCompletesProcess(MachineEvent machineEvent) {
-    return (machineEvent != null
+    return ((machineStartsProcess()) || (machineEvent != null
         && machineEvent.machineStartsProcess()
         && type.equals(EventType.END_PROCESS)
         && params != null
         && machineEvent.params != null
-        && params.equals(machineEvent.params));
+        && params.equals(machineEvent.params)));
   }
 
   @Override

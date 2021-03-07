@@ -2,13 +2,13 @@ package com.turomas.smartglass.twins.services;
 
 import com.turomas.smartglass.twins.domain.MachineTwin;
 import com.turomas.smartglass.twins.domain.Period;
+import com.turomas.smartglass.twins.domain.StateType;
 import com.turomas.smartglass.twins.domain.dto.*;
 import com.turomas.smartglass.twins.repositories.MachineTwinRepository;
 import com.turomas.smartglass.twins.services.exceptions.MachineTwinNotFound;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.List;
 
 @Service
 public class MachineTwinProxy implements MachineTwinService {
@@ -26,9 +26,17 @@ public class MachineTwinProxy implements MachineTwinService {
   }
 
   @Override
-  public Collection<RatioDTO> getRatios(String machineName, Period period) throws MachineTwinNotFound {
+  public StateType getState(String machineName) throws MachineTwinNotFound {
     MachineTwin machineTwin = getMachineTwin(machineName);
-    return machineTwin.calculateRatios(period.getPeriod());
+    return machineTwin.getState();
+  }
+
+  @Override
+  public Collection<RatioDTO> getRatios(String machineName, Period period)
+      throws MachineTwinNotFound {
+
+    MachineTwin machineTwin = getMachineTwin(machineName);
+    return machineTwin.getRatios(period.getDateRange());
   }
 
   @Override
@@ -36,35 +44,29 @@ public class MachineTwinProxy implements MachineTwinService {
       throws MachineTwinNotFound {
 
     MachineTwin machineTwin = getMachineTwin(machineName);
-    return machineTwin.getMostUsedMaterials(period.getPeriod());
+    return machineTwin.getMostUsedMaterials(period.getDateRange());
   }
 
   @Override
-  public WorkingStatisticsDTO getWorkingStatistics(String machineName, Period period)
+  public WorkingHoursDTO getWorkingHours(String machineName, Period period)
       throws MachineTwinNotFound {
 
     MachineTwin machineTwin = getMachineTwin(machineName);
-    return machineTwin.calculateWorkingStatistics(period.getPeriod());
+    return machineTwin.getWorkingStatistics(period.getDateRange());
   }
 
   @Override
-  public Collection<OptimizationDTO> getOptimizationsHistory(String machineName, Period period)
+  public ToolsInfoDTO getToolsInfo(String machineName, Period period) throws MachineTwinNotFound {
+    MachineTwin machineTwin = getMachineTwin(machineName);
+    return machineTwin.getToolsInfo(period.getDateRange());
+  }
+
+  @Override
+  public ProcessesInfoDTO getProcessesInfo(String machineName, Period period)
       throws MachineTwinNotFound {
 
     MachineTwin machineTwin = getMachineTwin(machineName);
-    return machineTwin.getOptimizationsHistory(period.getPeriod());
-  }
-
-  @Override
-  public ToolInfoDTO getToolInfo(String machineName, Period period) throws MachineTwinNotFound {
-    MachineTwin machineTwin = getMachineTwin(machineName);
-    return machineTwin.getToolInfo(period.getPeriod());
-  }
-
-  @Override
-  public WheelInfoDTO getWheelInfo(String machineName, Period period) throws MachineTwinNotFound {
-    MachineTwin machineTwin = getMachineTwin(machineName);
-    return machineTwin.getWheelInfo(period.getPeriod());
+    return machineTwin.getProcessesInfo(period.getDateRange());
   }
 
   @Override
@@ -72,6 +74,6 @@ public class MachineTwinProxy implements MachineTwinService {
       throws MachineTwinNotFound {
 
     MachineTwin machineTwin = getMachineTwin(machineName);
-    return machineTwin.getBreakdownsOccurred(period.getPeriod());
+    return machineTwin.getBreakdownsOccurred(period.getDateRange());
   }
 }

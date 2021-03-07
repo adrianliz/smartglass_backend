@@ -1,6 +1,7 @@
 package com.turomas.smartglass.twins.rest;
 
 import com.turomas.smartglass.twins.domain.Period;
+import com.turomas.smartglass.twins.domain.StateType;
 import com.turomas.smartglass.twins.domain.dto.*;
 import com.turomas.smartglass.twins.services.MachineTwinService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,11 @@ public class MachineTwinController {
     this.machineTwinService = machineTwinService;
   }
 
+  @GetMapping("/state")
+  public StateType getState(@RequestParam("machineName") String machineName) {
+    return machineTwinService.getState(machineName);
+  }
+
   @GetMapping("/ratios")
   public Collection<RatioDTO> getRatios(
       @RequestParam("machineName") String machineName,
@@ -27,7 +33,7 @@ public class MachineTwinController {
     return machineTwinService.getRatios(machineName, period);
   }
 
-  @GetMapping("/statistics/materials-usage")
+  @GetMapping("/materials-usage")
   public Collection<MaterialDTO> getMostUsedMaterials(
       @RequestParam("machineName") String machineName,
       @RequestParam(name = "period") Period period) {
@@ -35,39 +41,31 @@ public class MachineTwinController {
     return machineTwinService.getMostUsedMaterials(machineName, period);
   }
 
-  @GetMapping("/statistics/working")
-  public WorkingStatisticsDTO getWorkingStatistics(
+  @GetMapping("/working-hours")
+  public WorkingHoursDTO getWorkingHours(
       @RequestParam("machineName") String machineName,
       @RequestParam(name = "period") Period period) {
 
-    return machineTwinService.getWorkingStatistics(machineName, period);
+    return machineTwinService.getWorkingHours(machineName, period);
   }
 
-  @GetMapping("/statistics/optimizations-history")
-  public Collection<OptimizationDTO> getOptimizationsHistory(
+  @GetMapping("/tools-info")
+  public ToolsInfoDTO getToolsInfo(
       @RequestParam("machineName") String machineName,
       @RequestParam(name = "period") Period period) {
 
-    return machineTwinService.getOptimizationsHistory(machineName, period);
+    return machineTwinService.getToolsInfo(machineName, period);
   }
 
-  @GetMapping("/statistics/tool")
-  public ToolInfoDTO getToolInfo(
+  @GetMapping("/processes-info")
+  public ProcessesInfoDTO getProcessesInfo(
       @RequestParam("machineName") String machineName,
       @RequestParam(name = "period") Period period) {
 
-    return machineTwinService.getToolInfo(machineName, period);
+    return machineTwinService.getProcessesInfo(machineName, period);
   }
 
-  @GetMapping("/statistics/wheel")
-  public WheelInfoDTO getWheelInfo(
-      @RequestParam("machineName") String machineName,
-      @RequestParam(name = "period") Period period) {
-
-    return machineTwinService.getWheelInfo(machineName, period);
-  }
-
-  @GetMapping("/statistics/breakdowns")
+  @GetMapping("/breakdowns")
   public Collection<BreakdownDTO> getBreakdownsOccurred(
       @RequestParam("machineName") String machineName,
       @RequestParam(name = "period") Period period) {

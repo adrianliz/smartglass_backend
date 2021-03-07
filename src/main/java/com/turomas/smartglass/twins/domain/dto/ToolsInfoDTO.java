@@ -5,7 +5,8 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class WheelInfoDTO {
-  private final int diameter; // mm
+public class ToolsInfoDTO {
   private final long distanceCovered; // 0.1mm
+  private final int cuttingAngle; // mm
+  private final int wheelDiameter; // mm
 }

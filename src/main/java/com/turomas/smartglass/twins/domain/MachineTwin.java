@@ -1,118 +1,132 @@
 package com.turomas.smartglass.twins.domain;
 
 import com.turomas.smartglass.events.domain.MachineEvent;
+import com.turomas.smartglass.events.domain.ProcessName;
 import com.turomas.smartglass.events.services.MachineEventService;
 import com.turomas.smartglass.twins.domain.dto.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static java.util.stream.Collectors.groupingBy;
 
 public class MachineTwin {
-  public enum TwinState {
-    AVAILABLE,
-    DOING_PROCESS,
-    BREAKDOWN
-  }
-
   private final String name;
   private final MachineEventService machineEventService;
-  private final SortedSet<MachineEvent> occurredEvents;
-  private final SortedSet<MachineProcess> performedProcesses;
-  private final Map<DateRange, MachineRatios> ratios;
+  private final List<MachineState> states;
+  private final Map<DateRange, MachineMetrics> metrics;
   private MachineEvent lastEventEvaluated;
-  private TwinState state;
 
   public MachineTwin(String name, MachineEventService machineEventService) {
     this.name = name;
     this.machineEventService = machineEventService;
-    state = TwinState.BREAKDOWN;
-    ratios = new HashMap<>();
-    performedProcesses = new TreeSet<>();
-    occurredEvents = new TreeSet<>();
+    states = new ArrayList<>();
+    metrics = new HashMap<>();
 
     consumeEvents();
   }
 
-  private Collection<MachineEvent> selectEventsToConsume() {
+  private SortedSet<MachineEvent> produceEvents() {
     if (lastEventEvaluated != null) {
-      return occurredEvents.stream()
-          .filter(event -> event.compareTo(lastEventEvaluated) > 0)
-          .collect(Collectors.toCollection(TreeSet::new));
+      return machineEventService.getNextMachineEvents(name, lastEventEvaluated.getTimestamp());
     }
 
-    return Collections.unmodifiableCollection(occurredEvents);
+    return machineEventService.getMachineEvents(name);
   }
 
   // TODO consume each day
   private void consumeEvents() {
-    occurredEvents.addAll(machineEventService.getMachineEvents(name));
-
-    for (MachineEvent event : selectEventsToConsume()) {
-      MachineProcess lastPerformedProcess = null;
-
-      if (!performedProcesses.isEmpty()) {
-        lastPerformedProcess = performedProcesses.last();
-      }
-
-      if (lastPerformedProcess != null && lastPerformedProcess.inProgress()) {
-        lastPerformedProcess.update(event);
-      } else if (event.machineStartsProcess()) {
-        performedProcesses.add(new MachineProcess(event));
+    for (MachineEvent event : produceEvents()) {
+      if (states.isEmpty()) {
+        states.add(new MachineState(event));
+      } else {
+        MachineState lastState = states.get(states.size() - 1);
+        lastState.update(event, states);
       }
 
       lastEventEvaluated = event;
     }
-
-    updateState();
   }
 
-  private void updateState() {
-    if (!performedProcesses.isEmpty() && performedProcesses.last().inProgress()) {
-      state = TwinState.DOING_PROCESS;
-    } else if (lastEventEvaluated!= null && lastEventEvaluated.machineIsInBreakdown()) {
-      state = TwinState.BREAKDOWN;
-    } else {
-      state = TwinState.AVAILABLE;
-    }
-  }
+  private MachineMetrics getMetrics(DateRange dateRange) {
+    MachineMetrics metrics = this.metrics.get(dateRange);
 
-  public Collection<RatioDTO> calculateRatios(DateRange dateRange) {
-    MachineRatios ratios = this.ratios.get(dateRange);
-
-    if (ratios == null) {
-      ratios = new MachineRatios(dateRange);
-      this.ratios.put(dateRange, ratios);
+    if (metrics == null) {
+      metrics = new MachineMetrics(dateRange);
+      this.metrics.put(dateRange, metrics);
     }
 
-    return ratios.calculate(
-        Collections.unmodifiableCollection(occurredEvents),
-        Collections.unmodifiableCollection(performedProcesses));
+    return metrics;
   }
 
-  public WorkingStatisticsDTO calculateWorkingStatistics(DateRange dateRange) {
-    return null; // TODO
+  public StateType getState() {
+    return states.get(states.size() - 1).getType();
+  }
+
+  public Collection<RatioDTO> getRatios(DateRange dateRange) {
+    return getMetrics(dateRange).calculateRatios(states);
+  }
+
+  public WorkingHoursDTO getWorkingStatistics(DateRange dateRange) {
+    return getMetrics(dateRange).calculateWorkingHours(states);
+  }
+
+  public ProcessesInfoDTO getProcessesInfo(DateRange dateRange) {
+    return getMetrics(dateRange).calculateProcessesInfo(states);
   }
 
   public Collection<MaterialDTO> getMostUsedMaterials(DateRange dateRange) {
-    return machineEventService.getMostUsedMaterials(
-        name, dateRange.getStartDate(), dateRange.getEndDate());
+    SortedSet<MaterialDTO> mostUsedMaterials = new TreeSet<>(Collections.reverseOrder());
+
+    states.stream()
+        .filter(
+            state ->
+                state.machineEntersBetween(dateRange) && state.processWasFinished(ProcessName.CUT))
+        .collect(groupingBy(MachineState::getCuttingMaterial))
+        .forEach(
+            (material, matchingStates) ->
+                mostUsedMaterials.add(new MaterialDTO(material, matchingStates.size())));
+
+    return mostUsedMaterials;
   }
 
-  public Collection<OptimizationDTO> getOptimizationsHistory(DateRange dateRange) {
-    return machineEventService.getOptimizationHistory(
-        name, dateRange.getStartDate(), dateRange.getEndDate());
-  }
+  public ToolsInfoDTO getToolsInfo(DateRange dateRange) {
+    AtomicLong distanceCovered = new AtomicLong();
+    AtomicInteger cuttingAngle = new AtomicInteger();
+    AtomicInteger wheelDiameter = new AtomicInteger();
 
-  public ToolInfoDTO getToolInfo(DateRange dateRange) {
-    return machineEventService.getToolInfo(name, dateRange.getStartDate(), dateRange.getEndDate());
-  }
+    states.stream()
+        .filter(
+            state ->
+                state.machineEntersBetween(dateRange) && state.processWasFinished(ProcessName.CUT))
+        .reduce((first, second) -> second)
+        .ifPresent(
+            state -> {
+              cuttingAngle.set(state.getToolAngle());
+              distanceCovered.set(state.getToolDistanceCovered());
+            });
 
-  public WheelInfoDTO getWheelInfo(DateRange dateRange) {
-    return machineEventService.getWheelInfo(name, dateRange.getStartDate(), dateRange.getEndDate());
+    states.stream()
+        .filter(
+            state ->
+                state.machineEntersBetween(dateRange) && state.processWasFinished(ProcessName.LOWE))
+        .reduce((first, second) -> second)
+        .ifPresent(state -> wheelDiameter.set(state.getWheelDiameter()));
+
+    return new ToolsInfoDTO(distanceCovered.get(), cuttingAngle.get(), wheelDiameter.get());
   }
 
   public Collection<BreakdownDTO> getBreakdownsOccurred(DateRange dateRange) {
-    return machineEventService.getBreakdownsOccurred(
-        name, dateRange.getStartDate(), dateRange.getEndDate());
+    SortedSet<BreakdownDTO> breakdownsRanking = new TreeSet<>(Collections.reverseOrder());
+
+    states.stream()
+        .filter(state -> state.machineEntersBetween(dateRange) && state.inBreakdown())
+        .collect(groupingBy(MachineState::getBreakdownName))
+        .forEach(
+            (error, matchingStates) ->
+                breakdownsRanking.add(new BreakdownDTO(error, matchingStates.size())));
+
+    return breakdownsRanking;
   }
 }

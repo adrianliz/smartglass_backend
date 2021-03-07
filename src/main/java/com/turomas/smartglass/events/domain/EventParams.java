@@ -12,11 +12,27 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @NoArgsConstructor
 public class EventParams {
   @Field("process_name")
-  private String processName;
+  private ProcessName processName;
 
   @Field("optimization_name")
   private String optimizationName;
 
   @Field("cut_plan_id")
   private int cutPlanId;
+
+  @Field("material")
+  @EqualsAndHashCode.Exclude
+  private String material;
+
+  @Field("tool_angle")
+  @EqualsAndHashCode.Exclude
+  private int toolAngle;
+
+  @Field("tool_total_distance_covered")
+  @EqualsAndHashCode.Exclude
+  private long toolDistanceCovered;
+
+  @Field("wheel_size")
+  @EqualsAndHashCode.Exclude
+  private int wheelDiameter;
 }

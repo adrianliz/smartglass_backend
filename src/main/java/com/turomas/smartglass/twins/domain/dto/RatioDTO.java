@@ -4,6 +4,12 @@ import lombok.Getter;
 
 @Getter
 public class RatioDTO {
+  public enum RatioType {
+    AVAILABILITY,
+    EFFICIENCY,
+    EFFECTIVENESS
+  }
+
   private final RatioType ratio;
   private final double value;
 
@@ -14,7 +20,7 @@ public class RatioDTO {
     if (denominator > 0) {
       value = (double) firstMeasure / denominator;
     } else {
-      value = Double.MAX_VALUE; // Preguntar
+      value = 0;
     }
   }
 }
