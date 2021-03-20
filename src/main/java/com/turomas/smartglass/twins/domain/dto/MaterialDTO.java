@@ -1,21 +1,23 @@
 package com.turomas.smartglass.twins.domain.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
 public class MaterialDTO implements Comparable<MaterialDTO> {
-  private final String name;
-  private final int usedTimes;
+	@EqualsAndHashCode.Include
+	private final String name;
+	private final long timesUsed;
 
-  @Override
-  public int compareTo(MaterialDTO material) {
-    if (usedTimes > material.usedTimes) {
-      return 1;
-    } else if (usedTimes < material.usedTimes) {
-      return -1;
-    }
-    return 0;
-  }
+	@Override
+	public int compareTo(MaterialDTO material) {
+		if (this.equals(material)) return 0;
+		if (timesUsed > material.timesUsed) {
+			return 1;
+		}
+		return - 1;
+
+	}
 }

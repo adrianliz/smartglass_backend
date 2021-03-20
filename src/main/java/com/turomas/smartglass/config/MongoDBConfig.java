@@ -12,13 +12,9 @@ import java.util.List;
 
 @Configuration
 public class MongoDBConfig {
-  @Bean
-  public MongoCustomConversions mongoCustomConversions() {
-    return new MongoCustomConversions(
-        List.of(
-            new EventTypeConverter(),
-            new ProcessTypeConverter(),
-            new LocalDateTimeConverter(),
-            new DateConverter()));
-  }
+	@Bean
+	public MongoCustomConversions mongoCustomConversions() {
+		return new MongoCustomConversions(
+			List.of(new EventTypeConverter(), new ProcessTypeConverter(), new LocalDateTimeConverter(), new DateConverter()));
+	}
 }
