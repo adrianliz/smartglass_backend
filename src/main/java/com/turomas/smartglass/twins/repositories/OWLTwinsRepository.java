@@ -26,39 +26,39 @@ import java.util.Map;
 // TODO replace with ontology model
 @Repository
 public class OWLTwinsRepository implements TwinsRepository {
-	private final List<Twin> twins;
-	private final Twin twin;
+  private final List<Twin> twins;
+  private final Twin twin;
 
-	public OWLTwinsRepository(EventsService eventsService, @Value("classpath:transitions.json") Resource resourceFile)
-		throws IOException, JsonIOException, JsonSyntaxException {
-		Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> transitions =
-			loadTransitions(new FileReader(resourceFile.getFile()));
+  public OWLTwinsRepository(EventsService eventsService, @Value("classpath:transitions.json") Resource resourceFile)
+    throws IOException, JsonIOException, JsonSyntaxException {
+    Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> transitions =
+      loadTransitions(new FileReader(resourceFile.getFile()));
 
-		twin = new Twin(
-			new TwinOntology("Turomas1", "RUBI 300 SERIES", "RUBI 303BA"),
-			new StatesMachine(transitions), eventsService);
+    twin = new Twin(
+      new TwinOntology("Turomas1", "RUBI 300 SERIES", "RUBI 303BA"),
+      new StatesMachine(transitions), eventsService);
 
-		twins = List.of(twin);
-	}
+    twins = List.of(twin);
+  }
 
-	private Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> loadTransitions(Reader file)
-		throws JsonIOException, JsonSyntaxException {
+  private Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> loadTransitions(Reader file)
+    throws JsonIOException, JsonSyntaxException {
 
-		Type type =
-			new TypeToken<Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId>>() {
-			}.getType();
+    Type type =
+      new TypeToken<Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId>>() {
+      }.getType();
 
-		return new GsonBuilder().enableComplexMapKeySerialization().create().fromJson(file, type);
-	}
+    return new GsonBuilder().enableComplexMapKeySerialization().create().fromJson(file, type);
+  }
 
-	@Override
-	public List<Twin> getTwins() {
-		return twins;
-	}
+  @Override
+  public List<Twin> getTwins() {
+    return twins;
+  }
 
-	@Override
-	public Twin getTwin(String name) throws TwinNotFound {
-		if (name.equals("Turomas1")) return twin;
-		throw new TwinNotFound(name);
-	}
+  @Override
+  public Twin getTwin(String name) throws TwinNotFound {
+    if (name.equals("Turomas1")) return twin;
+    throw new TwinNotFound(name);
+  }
 }

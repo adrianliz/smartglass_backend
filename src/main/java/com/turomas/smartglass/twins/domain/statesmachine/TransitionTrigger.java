@@ -6,6 +6,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 @AllArgsConstructor
 public class TransitionTrigger<A, B> {
-	public final A state;
-	public final B event;
+  public final A state;
+  public final B event;
 }

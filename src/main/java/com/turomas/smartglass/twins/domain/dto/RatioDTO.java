@@ -4,23 +4,23 @@ import lombok.Getter;
 
 @Getter
 public class RatioDTO {
-	public enum RatioId {
-		AVAILABILITY,
-		EFFICIENCY,
-		EFFECTIVENESS
-	}
+  public enum RatioId {
+    AVAILABILITY,
+    EFFICIENCY,
+    EFFECTIVENESS
+  }
 
-	private final RatioId ratio;
-	private final double value;
+  private final RatioId ratio;
+  private final double value;
 
-	public RatioDTO(RatioId ratio, long firstMeasure, long secondMeasure) {
-		this.ratio = ratio;
-		long denominator = firstMeasure + secondMeasure;
+  public RatioDTO(RatioId ratio, long firstMeasure, long secondMeasure) {
+    this.ratio = ratio;
+    long denominator = firstMeasure + secondMeasure;
 
-		if (denominator > 0) {
-			value = (double) firstMeasure / denominator;
-		} else {
-			value = 0;
-		}
-	}
+    if (denominator > 0) {
+      value = (double) firstMeasure / denominator;
+    } else {
+      value = 0;
+    }
+  }
 }

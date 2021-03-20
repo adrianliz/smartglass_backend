@@ -8,19 +8,19 @@ import com.turomas.smartglass.twins.repositories.exceptions.TwinNotFound;
 import java.util.Collection;
 
 public interface TwinsService {
-	Collection<TwinOntology> getTwins();
+  Collection<TwinOntology> getTwins();
 
-	TwinOntology getTwin(String twinName) throws TwinNotFound;
+  TwinOntology getTwin(String twinName) throws TwinNotFound;
 
-	Collection<RatioDTO> getRatios(String twinName, Period period) throws TwinNotFound;
+  Collection<RatioDTO> getRatios(String twinName, Period period) throws TwinNotFound;
 
-	Collection<MaterialDTO> getMostUsedMaterials(String twinName, Period period) throws TwinNotFound;
+  Collection<MaterialDTO> getMostUsedMaterials(String twinName, Period period) throws TwinNotFound;
 
-	Collection<OptimizationDTO> getOptimizationsProcessed(String twinName, Period period) throws TwinNotFound;
+  Collection<OptimizationDTO> getOptimizationsProcessed(String twinName, Period period) throws TwinNotFound;
 
-	ToolsInfoDTO getToolsInfo(String twinName, Period period) throws TwinNotFound;
+  ToolsInfoDTO getToolsInfo(String twinName, Period period) throws TwinNotFound;
 
-	UsageTimeDTO getUsageTime(String twinName, Period period) throws TwinNotFound;
+  UsageTimeDTO getUsageTime(String twinName, Period period) throws TwinNotFound;
 
-	Collection<BreakdownDTO> getBreakdownsOccurred(String twinName, Period period) throws TwinNotFound;
+  Collection<BreakdownDTO> getBreakdownsOccurred(String twinName, Period period) throws TwinNotFound;
 }

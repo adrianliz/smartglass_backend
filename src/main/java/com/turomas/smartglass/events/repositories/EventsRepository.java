@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
 import java.util.SortedSet;
 
 public interface EventsRepository extends MongoRepository<Event, String> {
-	@Query(value = "{machine: ?0}", sort = "{timestamp: 1}")
-	SortedSet<Event> getEvents(String twinName);
+  @Query(value = "{machine: ?0}", sort = "{timestamp: 1}")
+  SortedSet<Event> getEvents(String twinName);
 
-	@Query(value = "{machine: ?0, timestamp: {$gt: ?1}}", sort = "{timestamp: 1}")
-	SortedSet<Event> getSubsequentEvents(String twinName, LocalDateTime startDate);
+  @Query(value = "{machine: ?0, timestamp: {$gt: ?1}}", sort = "{timestamp: 1}")
+  SortedSet<Event> getSubsequentEvents(String twinName, LocalDateTime startDate);
 }

@@ -8,15 +8,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class APIExceptionHandler {
-	@ExceptionHandler(TwinNotFound.class)
-	public ResponseEntity<APIException> handleMachineTwinNotFound(TwinNotFound ex) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND)
-			.body(new APIException(HttpStatus.NOT_FOUND, ex.getMessage()));
-	}
+  @ExceptionHandler(TwinNotFound.class)
+  public ResponseEntity<APIException> handleMachineTwinNotFound(TwinNotFound ex) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+      .body(new APIException(HttpStatus.NOT_FOUND, ex.getMessage()));
+  }
 
-	@ExceptionHandler(InvalidPeriodType.class)
-	public ResponseEntity<APIException> handleInvalidPeriodType(InvalidPeriodType ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-			.body(new APIException(HttpStatus.BAD_REQUEST, ex.getMessage()));
-	}
+  @ExceptionHandler(InvalidPeriodType.class)
+  public ResponseEntity<APIException> handleInvalidPeriodType(InvalidPeriodType ex) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+      .body(new APIException(HttpStatus.BAD_REQUEST, ex.getMessage()));
+  }
 }

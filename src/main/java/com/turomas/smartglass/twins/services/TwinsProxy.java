@@ -14,68 +14,68 @@ import java.util.List;
 
 @Service
 public class TwinsProxy implements TwinsService {
-	private final TwinsRepository twinsRepository;
+  private final TwinsRepository twinsRepository;
 
-	public TwinsProxy(TwinsRepository twinsRepository) {
-		this.twinsRepository = twinsRepository;
-	}
+  public TwinsProxy(TwinsRepository twinsRepository) {
+    this.twinsRepository = twinsRepository;
+  }
 
-	private Twin findTwin(String twinName) throws TwinNotFound {
-		Twin twin = twinsRepository.getTwin(twinName);
+  private Twin findTwin(String twinName) throws TwinNotFound {
+    Twin twin = twinsRepository.getTwin(twinName);
 
-		if (twin != null) return twin;
-		throw new TwinNotFound(twinName);
-	}
+    if (twin != null) return twin;
+    throw new TwinNotFound(twinName);
+  }
 
-	@Override
-	public Collection<TwinOntology> getTwins() {
-		List<TwinOntology> twins = new ArrayList<>();
+  @Override
+  public Collection<TwinOntology> getTwins() {
+    List<TwinOntology> twins = new ArrayList<>();
 
-		for (Twin twin : twinsRepository.getTwins()) {
-			twins.add(twin.getRepresentation());
-		}
+    for (Twin twin : twinsRepository.getTwins()) {
+      twins.add(twin.getRepresentation());
+    }
 
-		return twins;
-	}
+    return twins;
+  }
 
-	public TwinOntology getTwin(String twinName) throws TwinNotFound {
-		Twin twin = findTwin(twinName);
-		return twin.getRepresentation();
-	}
+  public TwinOntology getTwin(String twinName) throws TwinNotFound {
+    Twin twin = findTwin(twinName);
+    return twin.getRepresentation();
+  }
 
-	@Override
-	public Collection<RatioDTO> getRatios(String twinName, Period period) throws TwinNotFound {
-		Twin twin = findTwin(twinName);
-		return twin.getRatios(period.getDateRange());
-	}
+  @Override
+  public Collection<RatioDTO> getRatios(String twinName, Period period) throws TwinNotFound {
+    Twin twin = findTwin(twinName);
+    return twin.getRatios(period.getDateRange());
+  }
 
-	@Override
-	public Collection<MaterialDTO> getMostUsedMaterials(String twinName, Period period) throws TwinNotFound {
-		Twin twin = findTwin(twinName);
-		return twin.getMostUsedMaterials(period.getDateRange());
-	}
+  @Override
+  public Collection<MaterialDTO> getMostUsedMaterials(String twinName, Period period) throws TwinNotFound {
+    Twin twin = findTwin(twinName);
+    return twin.getMostUsedMaterials(period.getDateRange());
+  }
 
-	@Override
-	public Collection<OptimizationDTO> getOptimizationsProcessed(String twinName, Period period) throws TwinNotFound {
-		Twin twin = findTwin(twinName);
-		return twin.getOptimizationsProcessed(period.getDateRange());
-	}
+  @Override
+  public Collection<OptimizationDTO> getOptimizationsProcessed(String twinName, Period period) throws TwinNotFound {
+    Twin twin = findTwin(twinName);
+    return twin.getOptimizationsProcessed(period.getDateRange());
+  }
 
-	@Override
-	public ToolsInfoDTO getToolsInfo(String twinName, Period period) throws TwinNotFound {
-		Twin twin = findTwin(twinName);
-		return twin.getToolsInfo(period.getDateRange());
-	}
+  @Override
+  public ToolsInfoDTO getToolsInfo(String twinName, Period period) throws TwinNotFound {
+    Twin twin = findTwin(twinName);
+    return twin.getToolsInfo(period.getDateRange());
+  }
 
-	@Override
-	public UsageTimeDTO getUsageTime(String twinName, Period period) throws TwinNotFound {
-		Twin twin = findTwin(twinName);
-		return twin.getUsageTime(period.getDateRange());
-	}
+  @Override
+  public UsageTimeDTO getUsageTime(String twinName, Period period) throws TwinNotFound {
+    Twin twin = findTwin(twinName);
+    return twin.getUsageTime(period.getDateRange());
+  }
 
-	@Override
-	public Collection<BreakdownDTO> getBreakdownsOccurred(String twinName, Period period) throws TwinNotFound {
-		Twin twin = findTwin(twinName);
-		return twin.getBreakdownsOccurred(period.getDateRange());
-	}
+  @Override
+  public Collection<BreakdownDTO> getBreakdownsOccurred(String twinName, Period period) throws TwinNotFound {
+    Twin twin = findTwin(twinName);
+    return twin.getBreakdownsOccurred(period.getDateRange());
+  }
 }
