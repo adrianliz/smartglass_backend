@@ -1,0 +1,114 @@
+[
+  [
+    {
+      "state": "OFF",
+      "event": "OK"
+    },
+    "IN_STANDBY"
+  ],
+  [
+    {
+      "state": "OFF",
+      "event": "POWER_ON"
+    },
+    "IN_STANDBY"
+  ],
+  [
+    {
+      "state": "OFF",
+      "event": "START_PROCESS"
+    },
+    "DOING_PROCESS"
+  ],
+  [
+    {
+      "state": "OFF",
+      "event": "UNDEFINED"
+    },
+    "IN_STANDBY"
+  ],
+  [
+    {
+      "state": "IN_BREAKDOWN",
+      "event": "OK"
+    },
+    "IN_STANDBY"
+  ],
+  [
+    {
+      "state": "IN_BREAKDOWN",
+      "event": "POWER_ON"
+    },
+    "IN_STANDBY"
+  ],
+  [
+    {
+      "state": "IN_BREAKDOWN",
+      "event": "START_PROCESS"
+    },
+    "DOING_PROCESS"
+  ],
+  [
+    {
+      "state": "IN_BREAKDOWN",
+      "event": "POWER_OFF"
+    },
+    "OFF"
+  ],
+  [
+    {
+      "state": "IN_STANDBY",
+      "event": "START_PROCESS"
+    },
+    "DOING_PROCESS"
+  ],
+  [
+    {
+      "state": "IN_STANDBY",
+      "event": "ERROR"
+    },
+    "IN_BREAKDOWN"
+  ],
+  [
+    {
+      "state": "IN_STANDBY",
+      "event": "RESETTING"
+    },
+    "IN_BREAKDOWN"
+  ],
+  [
+    {
+      "state": "IN_STANDBY",
+      "event": "POWER_OFF"
+    },
+    "OFF"
+  ],
+  [
+    {
+      "state": "DOING_PROCESS",
+      "event": "ERROR"
+    },
+    "IN_BREAKDOWN"
+  ],
+  [
+    {
+      "state": "DOING_PROCESS",
+      "event": "RESETTING"
+    },
+    "IN_BREAKDOWN"
+  ],
+  [
+    {
+      "state": "DOING_PROCESS",
+      "event": "POWER_OFF"
+    },
+    "OFF"
+  ],
+  [
+    {
+      "state": "DOING_PROCESS",
+      "event": "END_PROCESS"
+    },
+    "IN_STANDBY"
+  ]
+]
