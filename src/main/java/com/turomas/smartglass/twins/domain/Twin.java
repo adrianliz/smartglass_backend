@@ -1,137 +1,84 @@
 package com.turomas.smartglass.twins.domain;
 
 import com.turomas.smartglass.events.domain.Event;
-import com.turomas.smartglass.events.domain.ProcessName;
+import com.turomas.smartglass.events.domain.EventType;
 import com.turomas.smartglass.events.services.EventsService;
-import com.turomas.smartglass.twins.domain.dto.*;
+import com.turomas.smartglass.twins.domain.dtos.MachineUsageDTO;
+import com.turomas.smartglass.twins.domain.dtos.RatioDTO;
+import com.turomas.smartglass.twins.domain.dtos.TimeDistributionDTO;
 import com.turomas.smartglass.twins.domain.statesmachine.StatesMachine;
+import com.turomas.smartglass.twins.domain.statesmachine.TransitionTrigger;
+import com.turomas.smartglass.twins.domain.statesmachine.TwinState;
 import com.turomas.smartglass.twins.domain.statesmachine.TwinStateId;
+import com.turomas.smartglass.twins.services.StatesService;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-
-import static java.util.stream.Collectors.groupingBy;
 
 public class Twin {
-  private final TwinOntology representation;
-  private final StatesMachine statesMachine;
-  private final EventsService eventsService;
-  private final List<TwinState> transitedStates;
-  private final Map<DateRange, TwinMetrics> metrics;
-  private Event lastEventEvaluated;
+	private final String twinName;
+	private final StatesService statesService;
+	private final Map<DateRange, TwinMetrics> metrics;
+	private StatesMachine statesMachine;
 
-  public Twin(TwinOntology representation, StatesMachine statesMachine, EventsService eventsService) {
-    this.representation = representation;
-    this.statesMachine = statesMachine;
-    this.eventsService = eventsService;
-    transitedStates = Collections.synchronizedList(new ArrayList<>());
-    metrics = Collections.synchronizedMap(new HashMap<>());
+	public Twin(String twinName, StatesService statesService,
+	            Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> transitions) {
+		this.twinName = twinName;
+		this.statesService = statesService;
+		metrics = new HashMap<>();
 
-    evaluateEvents();
-  }
+		createStatesMachine(transitions);
+	}
 
-  private SortedSet<Event> getNewEvents() {
-    if (lastEventEvaluated != null) {
-      return eventsService.getSubsequentEvents(representation.getTwinName(), lastEventEvaluated.getTimestamp());
-    }
+	private void createStatesMachine(Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> transitions) {
+		TwinState initialState = statesService.getLastState(twinName);
+		if (initialState == null) {
+			initialState = new TwinState(TwinStateId.OFF, twinName);
+		}
 
-    return eventsService.getEvents(representation.getTwinName());
-  }
+		statesMachine = new StatesMachine(initialState, transitions);
+	}
 
-  // TODO update each day
-  private void evaluateEvents() {
-    for (Event event : getNewEvents()) {
-      TwinStateId newStateId = statesMachine.doTransition(event);
+	private SortedSet<Event> getNewEvents(EventsService eventsService) {
+		Event lastEventEvaluated = statesMachine.getLastEventEvaluated();
+		if (lastEventEvaluated != null) {
+			return eventsService.getSubsequentEvents(twinName, lastEventEvaluated.getTimestamp());
+		}
 
-      if (transitedStates.isEmpty()) {
-        transitedStates.add(new TwinState(newStateId, event));
-      } else {
-        TwinState lastState = transitedStates.get(transitedStates.size() - 1);
-        lastState.update(newStateId, event, transitedStates);
-      }
-      lastEventEvaluated = event;
-    }
-  }
+		return eventsService.getEvents(twinName);
+	}
 
-  private TwinMetrics getMetrics(DateRange dateRange) {
-    TwinMetrics metrics = this.metrics.get(dateRange);
+	public void processEvents(EventsService eventsService) {
+		SortedSet<Event> eventsToProcess = getNewEvents(eventsService);
 
-    if (metrics == null) {
-      metrics = new TwinMetrics(dateRange);
-      this.metrics.put(dateRange, metrics);
-    }
+		if (! eventsToProcess.isEmpty()) {
+			List<TwinState> transitedStates = statesMachine.processEvents(eventsToProcess);
 
-    return metrics;
-  }
+			if (! transitedStates.isEmpty()) {
+				statesService.saveStates(transitedStates);
+			}
+		}
+	}
 
-  public TwinOntology getRepresentation() {
-    representation.updateState(statesMachine.getCurrentState());
-    return representation;
-  }
+	private TwinMetrics getMetrics(DateRange dateRange) {
+		TwinMetrics metrics = this.metrics.get(dateRange);
 
-  public Collection<RatioDTO> getRatios(DateRange dateRange) {
-    return getMetrics(dateRange).calculateRatios(transitedStates);
-  }
+		if (metrics == null) {
+			metrics = new TwinMetrics(dateRange);
+			this.metrics.put(dateRange, metrics);
+		}
 
-  public UsageTimeDTO getUsageTime(DateRange dateRange) {
-    return getMetrics(dateRange).calculateUsageTime(transitedStates);
-  }
+		return metrics;
+	}
 
-  public Collection<MaterialDTO> getMostUsedMaterials(DateRange dateRange) {
-    SortedSet<MaterialDTO> mostUsedMaterials = new TreeSet<>(Collections.reverseOrder());
+	public Collection<RatioDTO> getRatios(DateRange dateRange) {
+		return getMetrics(dateRange).calculateRatios(twinName, statesService);
+	}
 
-    transitedStates.stream()
-      .filter(state -> (state.machineEntersBetween(dateRange) && state.processWasFinished(ProcessName.CUT)))
-      .collect(groupingBy(TwinState::getProcessedMaterial))
-      .forEach((material, matchingStates) -> mostUsedMaterials.add(new MaterialDTO(material, matchingStates.size())));
+	public MachineUsageDTO getMachineUsage(DateRange dateRange) {
+		return getMetrics(dateRange).calculateMachineUsage(twinName, statesService);
+	}
 
-    return mostUsedMaterials;
-  }
-
-  public Collection<OptimizationDTO> getOptimizationsProcessed(DateRange dateRange) {
-    SortedSet<OptimizationDTO> optimizations = new TreeSet<>(Collections.reverseOrder());
-
-    transitedStates.stream()
-      .filter(state -> (state.machineEntersBetween(dateRange) && state.processWasFinished(ProcessName.CUT)))
-      .collect(groupingBy(TwinState::getProcessedOptimization, groupingBy(TwinState::getProcessedMaterial)))
-      .forEach((optimization, group) ->
-                 group.forEach((material, matchingStates) ->
-                                 optimizations.add(new OptimizationDTO(optimization, material, matchingStates.size()))));
-
-    return optimizations;
-  }
-
-  public ToolsInfoDTO getToolsInfo(DateRange dateRange) {
-    AtomicLong distanceCovered = new AtomicLong();
-    AtomicInteger cuttingAngle = new AtomicInteger();
-    AtomicInteger wheelDiameter = new AtomicInteger();
-
-    transitedStates.stream()
-      .filter(state -> (state.machineEntersBetween(dateRange) && state.processWasFinished(ProcessName.CUT)))
-      .reduce((first, second) -> second)
-      .ifPresent(
-        state -> {
-          cuttingAngle.set(state.getToolAngle());
-          distanceCovered.set(state.getToolDistanceCovered());
-        });
-
-    transitedStates.stream()
-      .filter(state -> (state.machineEntersBetween(dateRange) && state.processWasFinished(ProcessName.LOWE)))
-      .reduce((first, second) -> second)
-      .ifPresent(state -> wheelDiameter.set(state.getWheelDiameter()));
-
-    return new ToolsInfoDTO(distanceCovered.get(), cuttingAngle.get(), wheelDiameter.get());
-  }
-
-  public Collection<BreakdownDTO> getBreakdownsOccurred(DateRange dateRange) {
-    SortedSet<BreakdownDTO> breakdownsRanking = new TreeSet<>(Collections.reverseOrder());
-
-    transitedStates.stream()
-      .filter(state -> (state.machineEntersBetween(dateRange) && state.machineFiresError()))
-      .collect(groupingBy(TwinState::getErrorName))
-      .forEach((error, matchingStates) -> breakdownsRanking.add(new BreakdownDTO(error, matchingStates.size())));
-
-    return breakdownsRanking;
-  }
+	public TimeDistributionDTO getTimeDistribution(DateRange dateRange) {
+		return getMetrics(dateRange).calculateTimeDistribution(twinName, statesService);
+	}
 }

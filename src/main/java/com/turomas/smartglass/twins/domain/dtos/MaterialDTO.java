@@ -1,4 +1,4 @@
-package com.turomas.smartglass.twins.domain.dto;
+package com.turomas.smartglass.twins.domain.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -18,6 +18,5 @@ public class MaterialDTO implements Comparable<MaterialDTO> {
       return 1;
     }
     return - 1;
-
   }
 }
