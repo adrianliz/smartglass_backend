@@ -5,6 +5,7 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.turomas.smartglass.events.domain.EventType;
+import com.turomas.smartglass.events.services.EventsService;
 import com.turomas.smartglass.twins.domain.Twin;
 import com.turomas.smartglass.twins.domain.statesmachine.TransitionTrigger;
 import com.turomas.smartglass.twins.domain.statesmachine.TwinStateId;
@@ -27,13 +28,14 @@ public class OWLRepository implements TwinsRepository {
 	private final List<Twin> twins;
 	private final Twin twin;
 
-	public OWLRepository(StatesService statesService, @Value("classpath:transitions.json") Resource resourceFile)
+	public OWLRepository(StatesService statesService, EventsService eventsService,
+	                     @Value("classpath:transitions.json") Resource resourceFile)
 		throws IOException, JsonIOException, JsonSyntaxException {
 
 		Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> transitions =
 			loadTransitions(new FileReader(resourceFile.getFile()));
 
-		twin = new Twin("Turomas1", statesService, transitions);
+		twin = new Twin("Turomas1", statesService, eventsService, transitions);
 		twins = List.of(twin);
 	}
 

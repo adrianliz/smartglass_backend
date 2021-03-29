@@ -6,7 +6,7 @@ import com.turomas.smartglass.twins.repositories.exceptions.TwinNotFound;
 import java.util.List;
 
 public interface TwinsRepository {
-  List<Twin> getTwins();
+	List<Twin> getTwins();
 
-  Twin getTwin(String name) throws TwinNotFound;
+	Twin getTwin(String name) throws TwinNotFound;
 }

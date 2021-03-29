@@ -6,13 +6,13 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class BreakdownDTO implements Comparable<BreakdownDTO> {
+public class ErrorDTO implements Comparable<ErrorDTO> {
   @EqualsAndHashCode.Include
   private final String cause;
   private final long timesOccurred;
 
   @Override
-  public int compareTo(BreakdownDTO breakdown) {
+  public int compareTo(ErrorDTO breakdown) {
     if (this.equals(breakdown)) return 0;
     if (timesOccurred > breakdown.timesOccurred) {
       return 1;

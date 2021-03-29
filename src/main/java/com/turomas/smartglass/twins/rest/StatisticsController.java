@@ -24,10 +24,10 @@ public class StatisticsController {
 	}
 
 	@GetMapping("/materials")
-	public Collection<MaterialDTO> getMostUsedMaterials(
+	public Collection<MaterialDTO> getMaterialsUsed(
 		@PathVariable String twinName, @RequestParam(name = "period") Period period) {
 
-		return statisticsService.getMostUsedMaterials(twinName, period);
+		return statisticsService.getMaterialsUsed(twinName, period);
 	}
 
 	@GetMapping("/machine-usage")
@@ -38,14 +38,14 @@ public class StatisticsController {
 	}
 
 	@GetMapping("/optimizations")
-	public Collection<OptimizationDTO> getOptimizations(
+	public Collection<OptimizationDTO> getOptimizationsProcessed(
 		@PathVariable String twinName, @RequestParam(name = "period") Period period) {
 
 		return statisticsService.getOptimizationsProcessed(twinName, period);
 	}
 
 	@GetMapping("/tools")
-	public ToolsInfoDTO getToolsInfo(
+	public ToolsDTO getToolsInfo(
 		@PathVariable String twinName, @RequestParam(name = "period") Period period) {
 
 		return statisticsService.getToolsInfo(twinName, period);
@@ -58,10 +58,10 @@ public class StatisticsController {
 		return statisticsService.getTimeDistribution(twinName, period);
 	}
 
-	@GetMapping("/breakdowns")
-	public Collection<BreakdownDTO> getBreakdownsOccurred(
+	@GetMapping("/errors")
+	public Collection<ErrorDTO> getErrorsProduced(
 		@PathVariable String twinName, @RequestParam(name = "period") Period period) {
 
-		return statisticsService.getBreakdownsOccurred(twinName, period);
+		return statisticsService.getErrorsProduced(twinName, period);
 	}
 }

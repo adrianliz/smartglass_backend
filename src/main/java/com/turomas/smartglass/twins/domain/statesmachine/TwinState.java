@@ -63,15 +63,15 @@ public class TwinState {
 
 	public boolean lastEventTypeIs(EventType eventType) {
 		if (eventType != null) {
-			return eventType.equals(this.lastEventEvaluated.getType());
+			return lastEventEvaluated.typeIs(eventType);
 		}
 		return false;
 	}
 
-	public ProcessName getProcessInProgress() {
-		if (stateIdIs(TwinStateId.DOING_PROCESS)) {
-			return enterEvent.getParams().getProcessName();
+	public boolean stateIsDoing(ProcessName processName) {
+		if (stateIdIs(TwinStateId.DOING_PROCESS) && (processName != null)) {
+			return enterEvent.getParams().getProcessName().equals(processName);
 		}
-		return null;
+		return false;
 	}
 }

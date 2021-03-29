@@ -8,11 +8,11 @@ public class TimeDistributionDTO {
 
 	private final long processingGlassHours;
 	private final long loadingGlassHours;
-	private final long dontWorkingHours;
+	private final long standbyHours;
 
-	public TimeDistributionDTO(long processingGlassSeconds, long loadingGlassSeconds, long dontWorkingSeconds) {
+	public TimeDistributionDTO(long processingGlassSeconds, long loadingGlassSeconds, long standbySeconds) {
 		processingGlassHours = processingGlassSeconds / SECONDS_TO_HOURS_FACTOR;
 		loadingGlassHours = loadingGlassSeconds / SECONDS_TO_HOURS_FACTOR;
-		dontWorkingHours = dontWorkingSeconds / SECONDS_TO_HOURS_FACTOR;
+		standbyHours = standbySeconds / SECONDS_TO_HOURS_FACTOR;
 	}
 }

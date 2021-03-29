@@ -20,7 +20,7 @@ public class StatesMachine {
 
 		guards = new HashMap<>();
 		guards.put(new TransitionTrigger<>(TwinStateId.DOING_PROCESS, TwinStateId.IN_STANDBY),
-			new EndProcessMatcher());
+		           new EndProcessMatcher());
 
 		inconsistencies = new HashMap<>();
 		inconsistencies.put(

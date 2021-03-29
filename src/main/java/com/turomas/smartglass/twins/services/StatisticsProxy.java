@@ -21,8 +21,8 @@ public class StatisticsProxy implements StatisticsService {
 	}
 
 	@Override
-	public Collection<MaterialDTO> getMostUsedMaterials(String twinName, Period period) throws TwinNotFound {
-		return null;
+	public Collection<MaterialDTO> getMaterialsUsed(String twinName, Period period) throws TwinNotFound {
+		return twinsService.getTwin(twinName).getMaterialsUsed(period.getDateRange());
 	}
 
 	public MachineUsageDTO getMachineUsage(String twinName, Period period) throws TwinNotFound {
@@ -31,12 +31,12 @@ public class StatisticsProxy implements StatisticsService {
 
 	@Override
 	public Collection<OptimizationDTO> getOptimizationsProcessed(String twinName, Period period) throws TwinNotFound {
-		return null;
+		return twinsService.getTwin(twinName).getOptimizationsProcessed(period.getDateRange());
 	}
 
 	@Override
-	public ToolsInfoDTO getToolsInfo(String twinName, Period period) throws TwinNotFound {
-		return null;
+	public ToolsDTO getToolsInfo(String twinName, Period period) throws TwinNotFound {
+		return twinsService.getTwin(twinName).getToolsInfo(period.getDateRange());
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class StatisticsProxy implements StatisticsService {
 	}
 
 	@Override
-	public Collection<BreakdownDTO> getBreakdownsOccurred(String twinName, Period period) throws TwinNotFound {
-		return null;
+	public Collection<ErrorDTO> getErrorsProduced(String twinName, Period period) throws TwinNotFound {
+		return twinsService.getTwin(twinName).getErrorsProduced(period.getDateRange());
 	}
 }

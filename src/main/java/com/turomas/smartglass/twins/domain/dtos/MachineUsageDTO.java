@@ -7,10 +7,10 @@ import static com.turomas.smartglass.twins.domain.dtos.TimeDistributionDTO.SECON
 @Getter
 public class MachineUsageDTO {
 	private final long workingHours;
-	private final long machineOnHours;
+	private final long onHours;
 
 	public MachineUsageDTO(long workingSeconds, long machineOnSeconds) {
 		workingHours = workingSeconds / SECONDS_TO_HOURS_FACTOR;
-		machineOnHours = machineOnSeconds / SECONDS_TO_HOURS_FACTOR;
+		onHours = machineOnSeconds / SECONDS_TO_HOURS_FACTOR;
 	}
 }

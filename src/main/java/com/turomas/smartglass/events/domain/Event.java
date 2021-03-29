@@ -31,30 +31,38 @@ public class Event implements Comparable<Event> {
 
 	private LocalDateTime timestamp;
 
-	private boolean machineStartsProcess() {
-		return (type.equals(EventType.START_PROCESS));
+	public boolean machineStartsProcess() {
+		return typeIs(EventType.START_PROCESS);
 	}
 
-	private boolean validStartProcess(Event event) {
-		return ((event != null)
-			&& event.machineStartsProcess()
-			&& (event.machineName.equals(machineName)));
+	public boolean isFinalizedBy(Event event) {
+		return (machineStartsProcess()
+		        && (event.type.equals(EventType.END_PROCESS))
+		        && (params != null)
+		        && (event.params != null)
+		        && (params.equals(event.params)));
 	}
 
-	public boolean machineEndsProcess(Event event) {
-		return (validStartProcess(event)
-			&& (type.equals(EventType.END_PROCESS))
-			&& (params != null)
-			&& (event.params != null)
-			&& (params.equals(event.params)));
+	public void update(Event event) {
+		id = event.id;
+		params = event.params;
+		timestamp = event.timestamp;
 	}
 
-	public void updateStartEvent(Event event) {
-		if (validStartProcess(event) && machineStartsProcess()) {
-			id = event.id;
-			params = event.params;
-			timestamp = event.timestamp;
+	public boolean typeIs(EventType type) {
+		if (type != null) {
+			return this.type.equals(type);
 		}
+
+		return false;
+	}
+
+	public boolean finalizesProcess(ProcessName processName) {
+		if (typeIs(EventType.END_PROCESS)) {
+			return params.getProcessName().equals(processName);
+		}
+
+		return false;
 	}
 
 	@Override

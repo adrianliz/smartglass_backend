@@ -7,16 +7,16 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class MaterialDTO implements Comparable<MaterialDTO> {
-  @EqualsAndHashCode.Include
-  private final String name;
-  private final long timesUsed;
+	@EqualsAndHashCode.Include
+	private final String name;
+	private final long timesUsed;
 
-  @Override
-  public int compareTo(MaterialDTO material) {
-    if (this.equals(material)) return 0;
-    if (timesUsed > material.timesUsed) {
-      return 1;
-    }
-    return - 1;
-  }
+	@Override
+	public int compareTo(MaterialDTO material) {
+		if (this.equals(material)) return 0;
+		if (timesUsed > material.timesUsed) {
+			return 1;
+		}
+		return - 1;
+	}
 }

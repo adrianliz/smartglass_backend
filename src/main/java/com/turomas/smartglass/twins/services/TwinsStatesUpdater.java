@@ -6,21 +6,23 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TwinStatesUpdater {
+public class TwinsStatesUpdater {
 	private final TwinsService twinsService;
 	private final EventsService eventsService;
+	private final StatesService statesService;
 
-	public TwinStatesUpdater(TwinsService twinsService, EventsService eventsService) {
+	public TwinsStatesUpdater(TwinsService twinsService, EventsService eventsService, StatesService statesService) {
 		this.twinsService = twinsService;
 		this.eventsService = eventsService;
+		this.statesService = statesService;
 
 		updateTwinsStates();
 	}
 
-	@Scheduled(fixedDelay = 5000)
+	@Scheduled(fixedDelayString = "${states.updateDelay}")
 	private void updateTwinsStates() {
 		for (Twin twin : twinsService.getTwins()) {
-			twin.processEvents(eventsService);
+			twin.processEvents(eventsService, statesService);
 		}
 	}
 }
