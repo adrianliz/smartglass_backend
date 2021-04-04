@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Document(collection = "events")
 @Getter
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Event implements Comparable<Event> {
 	@Id
 	@EqualsAndHashCode.Include
@@ -31,6 +32,14 @@ public class Event implements Comparable<Event> {
 
 	private LocalDateTime timestamp;
 
+	public boolean typeIs(EventType type) {
+		if (type != null) {
+			return this.type.equals(type);
+		}
+
+		return false;
+	}
+
 	public boolean machineStartsProcess() {
 		return typeIs(EventType.START_PROCESS);
 	}
@@ -44,17 +53,11 @@ public class Event implements Comparable<Event> {
 	}
 
 	public void update(Event event) {
-		id = event.id;
-		params = event.params;
-		timestamp = event.timestamp;
-	}
-
-	public boolean typeIs(EventType type) {
-		if (type != null) {
-			return this.type.equals(type);
+		if (event != null) {
+			id = event.id;
+			params = event.params;
+			timestamp = event.timestamp;
 		}
-
-		return false;
 	}
 
 	public boolean finalizesProcess(ProcessName processName) {

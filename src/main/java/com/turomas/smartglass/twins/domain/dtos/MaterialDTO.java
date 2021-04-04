@@ -6,6 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class MaterialDTO implements Comparable<MaterialDTO> {
 	@EqualsAndHashCode.Include
 	private final String name;

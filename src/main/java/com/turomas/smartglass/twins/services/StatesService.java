@@ -4,12 +4,12 @@ import com.turomas.smartglass.twins.domain.statesmachine.TwinState;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
+import java.util.Optional;
 
 public interface StatesService {
-	TwinState getLastState(String twinName);
+	Optional<TwinState> getLastState(String twinName);
 
-	List<TwinState> getStatesBetween(String twinName, LocalDateTime startDate, LocalDateTime endDate);
+	Collection<TwinState> getStatesBetween(String twinName, LocalDateTime startDate, LocalDateTime endDate);
 
 	void saveStates(Collection<TwinState> states);
 }

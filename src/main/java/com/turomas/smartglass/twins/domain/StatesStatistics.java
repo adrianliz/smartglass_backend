@@ -15,11 +15,11 @@ import java.util.function.Predicate;
 
 import static com.turomas.smartglass.twins.domain.dtos.RatioDTO.RatioId.*;
 
-public class StatesMetrics {
+public class StatesStatistics {
 	private final String twinName;
 	private final StatesService statesService;
 
-	public StatesMetrics(String twinName, StatesService statesService) {
+	public StatesStatistics(String twinName, StatesService statesService) {
 		this.twinName = twinName;
 		this.statesService = statesService;
 	}

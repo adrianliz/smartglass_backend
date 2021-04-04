@@ -18,11 +18,11 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
 
-public class EventsMetrics {
+public class EventsStatistics {
 	private final String twinName;
 	private final EventsService eventsService;
 
-	public EventsMetrics(String twinName, EventsService eventsService) {
+	public EventsStatistics(String twinName, EventsService eventsService) {
 		this.twinName = twinName;
 		this.eventsService = eventsService;
 	}
@@ -35,8 +35,8 @@ public class EventsMetrics {
 		return events.collect(groupingBy(classifier, Collectors.counting()));
 	}
 
-	private Event getLastEvent(Stream<Event> events) {
-		return events.reduce((first, last) -> last).orElse(null);
+	private Optional<Event> getLastEvent(Stream<Event> events) {
+		return events.reduce((first, last) -> last);
 	}
 
 	private boolean eventFinalizesProcess(Event event, ProcessName processName) {
@@ -79,17 +79,14 @@ public class EventsMetrics {
 		ToolsDTO toolsInfo = new ToolsDTO();
 
 		Stream<Event> filteredEvents = filterEvents(events, event -> eventFinalizesProcess(event, ProcessName.CUT));
-		Event lastEvent = getLastEvent(filteredEvents);
-		if (lastEvent != null) {
-			toolsInfo.setToolDistanceCovered(lastEvent.getParams().getDistanceCovered());
-			toolsInfo.setToolAngle(lastEvent.getParams().getToolAngle());
-		}
+		getLastEvent(filteredEvents).ifPresent(
+			event -> {
+				toolsInfo.setToolDistanceCovered(event.getParams().getDistanceCovered());
+				toolsInfo.setToolAngle(event.getParams().getToolAngle());
+			});
 
 		filteredEvents = filterEvents(events, event -> eventFinalizesProcess(event, ProcessName.LOWE));
-		lastEvent = getLastEvent(filteredEvents);
-		if (lastEvent != null) {
-			toolsInfo.setWheelDiameter(lastEvent.getParams().getWheelDiameter());
-		}
+		getLastEvent(filteredEvents).ifPresent(event -> toolsInfo.setWheelDiameter(event.getParams().getWheelDiameter()));
 
 		return toolsInfo;
 	}

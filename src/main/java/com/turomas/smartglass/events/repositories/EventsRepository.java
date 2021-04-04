@@ -1,12 +1,10 @@
 package com.turomas.smartglass.events.repositories;
 
 import com.turomas.smartglass.events.domain.Event;
-import com.turomas.smartglass.events.domain.ProcessName;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.SortedSet;
 
 public interface EventsRepository extends MongoRepository<Event, String> {

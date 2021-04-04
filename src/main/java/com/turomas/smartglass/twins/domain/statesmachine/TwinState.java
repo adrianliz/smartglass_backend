@@ -17,8 +17,9 @@ import java.time.Duration;
 @Document(collection = "states")
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
-public class TwinState {
+@NoArgsConstructor // Necessary for Spring Data MongoDB Repository (TODO use Mongo Template instead of Repository)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class TwinState implements Comparable<TwinState> {
 	@Id
 	@EqualsAndHashCode.Include
 	private String id;
@@ -73,5 +74,10 @@ public class TwinState {
 			return enterEvent.getParams().getProcessName().equals(processName);
 		}
 		return false;
+	}
+
+	@Override
+	public int compareTo(TwinState twinState) {
+		return id.compareTo(twinState.id);
 	}
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StatesProxy implements StatesService {
@@ -19,20 +20,20 @@ public class StatesProxy implements StatesService {
 	}
 
 	@Override
-	public TwinState getLastState(String twinName) {
+	public Optional<TwinState> getLastState(String twinName) {
 		PageRequest request =
 			PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "enterEvent.timestamp"));
 
 		List<TwinState> states = statesRepository.getStates(twinName, request).getContent();
 		if (! states.isEmpty()) {
-			return states.get(0);
+			return Optional.of(states.get(0));
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
 	@Override
-	public List<TwinState> getStatesBetween(String twinName, LocalDateTime startDate, LocalDateTime endDate) {
+	public Collection<TwinState> getStatesBetween(String twinName, LocalDateTime startDate, LocalDateTime endDate) {
 		return statesRepository.getStatesBetween(twinName, startDate, endDate);
 	}
 

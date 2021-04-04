@@ -5,7 +5,7 @@ import com.turomas.smartglass.twins.repositories.TwinsRepository;
 import com.turomas.smartglass.twins.repositories.exceptions.TwinNotFound;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Collection;
 
 @Service
 public class TwinsProxy implements TwinsService {
@@ -21,7 +21,7 @@ public class TwinsProxy implements TwinsService {
 	}
 
 	@Override
-	public List<Twin> getTwins() {
+	public Collection<Twin> getTwins() {
 		return twinsRepository.getTwins();
 	}
 }

@@ -28,13 +28,13 @@ public class StatesMachine {
 			new UpdatePreviousEvent());
 	}
 
-	private void executeTransition(TwinStateId newStateId, List<TwinState> statesTransited) {
+	private void executeTransition(TwinStateId newStateId, Collection<TwinState> transitedStates) {
 		currentState =
 			new TwinState(newStateId, currentState.getTwinName(), getLastEventEvaluated());
-		statesTransited.add(currentState);
+		transitedStates.add(currentState);
 	}
 
-	private void processEvent(Event event, List<TwinState> statesTransited) {
+	private void processEvent(Event event, Collection<TwinState> transitedStates) {
 		if (event != null) {
 			currentState.updateLastEventEvaluated(event);
 
@@ -48,23 +48,23 @@ public class StatesMachine {
 				inconsistency.fixInconsistency(currentState.getEnterEvent(), event);
 			} else if (guard != null) {
 				if (! guard.cutTransition(currentState.getEnterEvent(), event)) {
-					executeTransition(newStateId, statesTransited);
+					executeTransition(newStateId, transitedStates);
 				}
 			} else if (newStateId != null) {
-				executeTransition(newStateId, statesTransited);
+				executeTransition(newStateId, transitedStates);
 			}
 		}
 	}
 
-	public List<TwinState> processEvents(SortedSet<Event> events) {
-		List<TwinState> statesTransited = new ArrayList<>();
-		statesTransited.add(currentState);
+	public Collection<TwinState> processEvents(Collection<Event> events) {
+		SortedSet<TwinState> transitedStates = new TreeSet<>();
+		transitedStates.add(currentState);
 
 		for (Event event : events) {
-			processEvent(event, statesTransited);
+			processEvent(event, transitedStates);
 		}
 
-		return statesTransited;
+		return transitedStates;
 	}
 
 	public Event getLastEventEvaluated() {
