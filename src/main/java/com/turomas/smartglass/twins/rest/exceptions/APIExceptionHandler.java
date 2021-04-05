@@ -1,5 +1,6 @@
 package com.turomas.smartglass.twins.rest.exceptions;
 
+import com.turomas.smartglass.twins.domain.exceptions.InvalidDateRange;
 import com.turomas.smartglass.twins.repositories.exceptions.TwinNotFound;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,12 @@ public class APIExceptionHandler {
 
 	@ExceptionHandler(InvalidPeriod.class)
 	public ResponseEntity<APIException> handleInvalidPeriodType(InvalidPeriod ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+		                     .body(new APIException(HttpStatus.BAD_REQUEST, ex.getMessage()));
+	}
+
+	@ExceptionHandler(InvalidDateRange.class)
+	public ResponseEntity<APIException> handleInvalidPeriodType(InvalidDateRange ex) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 		                     .body(new APIException(HttpStatus.BAD_REQUEST, ex.getMessage()));
 	}

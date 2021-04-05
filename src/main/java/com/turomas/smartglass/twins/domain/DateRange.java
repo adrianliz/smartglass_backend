@@ -1,7 +1,7 @@
 package com.turomas.smartglass.twins.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.turomas.smartglass.twins.domain.exceptions.InvalidPeriod;
+import com.turomas.smartglass.twins.domain.exceptions.InvalidDateRange;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -16,9 +16,9 @@ public class DateRange {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private final LocalDateTime endDate;
 
-	public DateRange(LocalDateTime startDate, LocalDateTime endDate) throws InvalidPeriod {
+	public DateRange(LocalDateTime startDate, LocalDateTime endDate) throws InvalidDateRange {
 		if (startDate.compareTo(endDate) >= 0) {
-			throw new InvalidPeriod(startDate, endDate);
+			throw new InvalidDateRange(startDate, endDate);
 		}
 
 		this.startDate = startDate;

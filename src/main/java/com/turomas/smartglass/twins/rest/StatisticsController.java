@@ -1,10 +1,13 @@
 package com.turomas.smartglass.twins.rest;
 
+import com.turomas.smartglass.twins.domain.DateRange;
 import com.turomas.smartglass.twins.domain.Period;
 import com.turomas.smartglass.twins.domain.dtos.*;
 import com.turomas.smartglass.twins.services.StatisticsService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 @RestController
@@ -31,10 +34,10 @@ public class StatisticsController {
 	}
 
 	@GetMapping("/machine-usage")
-	public MachineUsageDTO getMachineUsage(
-		@PathVariable String twinName, @RequestParam(name = "period") Period period) {
-
-		return statisticsService.getMachineUsage(twinName, period);
+	public MachineUsageDTO getMachineUsage(@PathVariable String twinName,
+	                                       @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDate,
+	                                       @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDate) {
+		return statisticsService.getMachineUsage(twinName, new DateRange(startDate, endDate));
 	}
 
 	@GetMapping("/optimizations")

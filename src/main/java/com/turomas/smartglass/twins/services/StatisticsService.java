@@ -1,5 +1,6 @@
 package com.turomas.smartglass.twins.services;
 
+import com.turomas.smartglass.twins.domain.DateRange;
 import com.turomas.smartglass.twins.domain.Period;
 import com.turomas.smartglass.twins.domain.dtos.*;
 import com.turomas.smartglass.twins.repositories.exceptions.TwinNotFound;
@@ -11,7 +12,7 @@ public interface StatisticsService {
 
 	Collection<MaterialDTO> getMaterialsUsed(String twinName, Period period) throws TwinNotFound;
 
-	MachineUsageDTO getMachineUsage(String twinName, Period period) throws TwinNotFound;
+	MachineUsageDTO getMachineUsage(String twinName, DateRange dateRange) throws TwinNotFound;
 
 	Collection<OptimizationDTO> getOptimizationsProcessed(String twinName, Period period) throws TwinNotFound;
 
