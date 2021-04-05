@@ -2,9 +2,9 @@ package com.turomas.smartglass.twins.domain;
 
 import com.turomas.smartglass.events.domain.EventType;
 import com.turomas.smartglass.events.domain.ProcessName;
-import com.turomas.smartglass.twins.domain.dtos.MachineUsageDTO;
-import com.turomas.smartglass.twins.domain.dtos.RatioDTO;
-import com.turomas.smartglass.twins.domain.dtos.TimeDistributionDTO;
+import com.turomas.smartglass.twins.domain.dtos.statistics.MachineUsageDTO;
+import com.turomas.smartglass.twins.domain.dtos.statistics.RatioDTO;
+import com.turomas.smartglass.twins.domain.dtos.statistics.TimeDistributionDTO;
 import com.turomas.smartglass.twins.domain.statesmachine.TwinState;
 import com.turomas.smartglass.twins.domain.statesmachine.TwinStateId;
 import com.turomas.smartglass.twins.services.StatesService;
@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static com.turomas.smartglass.twins.domain.dtos.RatioDTO.RatioId.*;
+import static com.turomas.smartglass.twins.domain.dtos.statistics.RatioDTO.RatioId.*;
 
 public class StatesStatistics {
 	private final String twinName;

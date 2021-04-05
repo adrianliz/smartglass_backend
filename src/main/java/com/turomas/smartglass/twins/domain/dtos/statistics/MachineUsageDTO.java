@@ -1,8 +1,8 @@
-package com.turomas.smartglass.twins.domain.dtos;
+package com.turomas.smartglass.twins.domain.dtos.statistics;
 
 import lombok.Getter;
 
-import static com.turomas.smartglass.twins.domain.dtos.TimeDistributionDTO.SECONDS_TO_HOURS_FACTOR;
+import static com.turomas.smartglass.twins.domain.dtos.statistics.TimeDistributionDTO.SECONDS_TO_HOURS_FACTOR;
 
 @Getter
 public class MachineUsageDTO {

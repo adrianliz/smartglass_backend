@@ -2,7 +2,7 @@ package com.turomas.smartglass.twins.rest;
 
 import com.turomas.smartglass.twins.domain.DateRange;
 import com.turomas.smartglass.twins.domain.Period;
-import com.turomas.smartglass.twins.domain.dtos.*;
+import com.turomas.smartglass.twins.domain.dtos.statistics.*;
 import com.turomas.smartglass.twins.services.StatisticsService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;

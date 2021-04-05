@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken;
 import com.turomas.smartglass.events.domain.EventType;
 import com.turomas.smartglass.events.services.EventsService;
 import com.turomas.smartglass.twins.domain.Twin;
+import com.turomas.smartglass.twins.domain.dtos.twins.TwinModelDTO;
 import com.turomas.smartglass.twins.domain.statesmachine.TransitionTrigger;
 import com.turomas.smartglass.twins.domain.statesmachine.TwinStateId;
 import com.turomas.smartglass.twins.repositories.exceptions.TwinNotFound;
@@ -59,5 +60,10 @@ public class OWLRepository implements TwinsRepository {
 		if (name.equals("Turomas1"))
 			return twin;
 		throw new TwinNotFound(name);
+	}
+
+	@Override
+	public TwinModelDTO getTwinModel(String name) throws TwinNotFound {
+		return new TwinModelDTO(name, "RUBI 300 SERIES", "RUBI 303 BA");
 	}
 }

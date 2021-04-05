@@ -4,10 +4,10 @@ import com.turomas.smartglass.events.domain.Event;
 import com.turomas.smartglass.events.domain.EventType;
 import com.turomas.smartglass.events.domain.ProcessName;
 import com.turomas.smartglass.events.services.EventsService;
-import com.turomas.smartglass.twins.domain.dtos.ErrorDTO;
-import com.turomas.smartglass.twins.domain.dtos.MaterialDTO;
-import com.turomas.smartglass.twins.domain.dtos.OptimizationDTO;
-import com.turomas.smartglass.twins.domain.dtos.ToolsDTO;
+import com.turomas.smartglass.twins.domain.dtos.statistics.ErrorDTO;
+import com.turomas.smartglass.twins.domain.dtos.statistics.MaterialDTO;
+import com.turomas.smartglass.twins.domain.dtos.statistics.OptimizationDTO;
+import com.turomas.smartglass.twins.domain.dtos.statistics.ToolsDTO;
 import org.springframework.data.util.Pair;
 
 import java.util.*;

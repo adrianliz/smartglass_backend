@@ -1,6 +1,8 @@
 package com.turomas.smartglass.twins.services;
 
 import com.turomas.smartglass.twins.domain.Twin;
+import com.turomas.smartglass.twins.domain.dtos.twins.TwinModelDTO;
+import com.turomas.smartglass.twins.domain.dtos.twins.TwinStateDTO;
 import com.turomas.smartglass.twins.repositories.TwinsRepository;
 import com.turomas.smartglass.twins.repositories.exceptions.TwinNotFound;
 import org.springframework.stereotype.Service;
@@ -23,5 +25,15 @@ public class TwinsProxy implements TwinsService {
 	@Override
 	public Collection<Twin> getTwins() {
 		return twinsRepository.getTwins();
+	}
+
+	@Override
+	public TwinModelDTO getTwinModel(String twinName) throws TwinNotFound {
+		return twinsRepository.getTwinModel(twinName);
+	}
+
+	@Override
+	public TwinStateDTO getTwinState(String twinName) throws TwinNotFound {
+		return twinsRepository.getTwin(twinName).getCurrentState();
 	}
 }

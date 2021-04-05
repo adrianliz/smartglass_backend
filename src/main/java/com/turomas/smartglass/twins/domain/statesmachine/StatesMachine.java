@@ -2,6 +2,7 @@ package com.turomas.smartglass.twins.domain.statesmachine;
 
 import com.turomas.smartglass.events.domain.Event;
 import com.turomas.smartglass.events.domain.EventType;
+import com.turomas.smartglass.twins.domain.dtos.twins.TwinStateDTO;
 import com.turomas.smartglass.twins.domain.statesmachine.guards.EndProcessMatcher;
 import com.turomas.smartglass.twins.domain.statesmachine.inconsistencies.UpdatePreviousEvent;
 
@@ -69,5 +70,9 @@ public class StatesMachine {
 
 	public Event getLastEventEvaluated() {
 		return currentState.getLastEventEvaluated();
+	}
+
+	public TwinStateDTO getCurrentState() {
+		return new TwinStateDTO(currentState.getTwinStateId());
 	}
 }
