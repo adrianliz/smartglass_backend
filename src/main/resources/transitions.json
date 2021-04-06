@@ -4,14 +4,14 @@
       "state": "OFF",
       "event": "OK"
     },
-    "IN_STANDBY"
+    "IN_BREAKDOWN"
   ],
   [
     {
       "state": "OFF",
       "event": "POWER_ON"
     },
-    "IN_STANDBY"
+    "IN_BREAKDOWN"
   ],
   [
     {

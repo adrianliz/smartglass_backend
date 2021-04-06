@@ -7,6 +7,6 @@ public class EndProcessMatcher implements GuardStrategy {
   public boolean cutTransition(Event startProcessEvent, Event endProcessEvent) {
     return ((startProcessEvent == null)
             || (endProcessEvent == null)
-            || (! endProcessEvent.machineEndsProcess(startProcessEvent)));
+            || (! startProcessEvent.isFinalizedBy(endProcessEvent)));
   }
 }

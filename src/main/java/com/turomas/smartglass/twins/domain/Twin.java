@@ -1,137 +1,91 @@
 package com.turomas.smartglass.twins.domain;
 
 import com.turomas.smartglass.events.domain.Event;
-import com.turomas.smartglass.events.domain.ProcessName;
+import com.turomas.smartglass.events.domain.EventType;
 import com.turomas.smartglass.events.services.EventsService;
-import com.turomas.smartglass.twins.domain.dto.*;
+import com.turomas.smartglass.twins.domain.dtos.statistics.*;
 import com.turomas.smartglass.twins.domain.statesmachine.StatesMachine;
+import com.turomas.smartglass.twins.domain.statesmachine.TransitionTrigger;
+import com.turomas.smartglass.twins.domain.statesmachine.TwinState;
 import com.turomas.smartglass.twins.domain.statesmachine.TwinStateId;
+import com.turomas.smartglass.twins.services.StatesService;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-
-import static java.util.stream.Collectors.groupingBy;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeSet;
 
 public class Twin {
-  private final TwinOntology representation;
-  private final StatesMachine statesMachine;
-  private final EventsService eventsService;
-  private final List<TwinState> transitedStates;
-  private final Map<DateRange, TwinMetrics> metrics;
-  private Event lastEventEvaluated;
+  private final String name;
+  private final StatesStatistics statesStatistics;
+  private final EventsStatistics eventsStatistics;
+  private StatesMachine statesMachine;
 
-  public Twin(TwinOntology representation, StatesMachine statesMachine, EventsService eventsService) {
-    this.representation = representation;
-    this.statesMachine = statesMachine;
-    this.eventsService = eventsService;
-    transitedStates = Collections.synchronizedList(new ArrayList<>());
-    metrics = Collections.synchronizedMap(new HashMap<>());
+  public Twin(String name, StatesService statesService, EventsService eventsService,
+              Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> transitions) {
+    this.name = name;
+    statesStatistics = new StatesStatistics(name, statesService);
+    eventsStatistics = new EventsStatistics(name, eventsService);
 
-    evaluateEvents();
+    createStatesMachine(transitions, statesService);
   }
 
-  private SortedSet<Event> getNewEvents() {
+  private void createStatesMachine(Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> transitions,
+                                   StatesService statesService) {
+    Optional<TwinState> initialState = statesService.getLastState(name);
+    statesMachine =
+      new StatesMachine(initialState.orElse(new TwinState(TwinStateId.OFF, name)), transitions);
+  }
+
+  private Collection<Event> getNewEvents(EventsService eventsService) {
+    Event lastEventEvaluated = statesMachine.getLastEventEvaluated();
     if (lastEventEvaluated != null) {
-      return eventsService.getSubsequentEvents(representation.getTwinName(), lastEventEvaluated.getTimestamp());
+      return eventsService.getSubsequentEvents(name, lastEventEvaluated.getTimestamp());
     }
 
-    return eventsService.getEvents(representation.getTwinName());
+    return eventsService.getEvents(name);
   }
 
-  // TODO update each day
-  private void evaluateEvents() {
-    for (Event event : getNewEvents()) {
-      TwinStateId newStateId = statesMachine.doTransition(event);
+  public Collection<TwinState> processEvents(EventsService eventsService) {
+    Collection<Event> eventsToProcess = getNewEvents(eventsService);
+    Collection<TwinState> transitedStates = new TreeSet<>();
 
-      if (transitedStates.isEmpty()) {
-        transitedStates.add(new TwinState(newStateId, event));
-      } else {
-        TwinState lastState = transitedStates.get(transitedStates.size() - 1);
-        lastState.update(newStateId, event, transitedStates);
-      }
-      lastEventEvaluated = event;
-    }
-  }
-
-  private TwinMetrics getMetrics(DateRange dateRange) {
-    TwinMetrics metrics = this.metrics.get(dateRange);
-
-    if (metrics == null) {
-      metrics = new TwinMetrics(dateRange);
-      this.metrics.put(dateRange, metrics);
+    if (! eventsToProcess.isEmpty()) {
+      transitedStates = statesMachine.processEvents(eventsToProcess);
     }
 
-    return metrics;
+    return transitedStates;
   }
 
-  public TwinOntology getRepresentation() {
-    representation.updateState(statesMachine.getCurrentState());
-    return representation;
+  public TwinStateId getCurrentState() {
+    return statesMachine.getCurrentState();
   }
 
   public Collection<RatioDTO> getRatios(DateRange dateRange) {
-    return getMetrics(dateRange).calculateRatios(transitedStates);
+    return statesStatistics.calculateRatios(dateRange);
   }
 
-  public UsageTimeDTO getUsageTime(DateRange dateRange) {
-    return getMetrics(dateRange).calculateUsageTime(transitedStates);
+  public MachineUsageDTO getMachineUsage(DateRange dateRange) {
+    return statesStatistics.calculateMachineUsage(dateRange);
   }
 
-  public Collection<MaterialDTO> getMostUsedMaterials(DateRange dateRange) {
-    SortedSet<MaterialDTO> mostUsedMaterials = new TreeSet<>(Collections.reverseOrder());
+  public TimeDistributionDTO getTimeDistribution(DateRange dateRange) {
+    return statesStatistics.calculateTimeDistribution(dateRange);
+  }
 
-    transitedStates.stream()
-      .filter(state -> (state.machineEntersBetween(dateRange) && state.processWasFinished(ProcessName.CUT)))
-      .collect(groupingBy(TwinState::getProcessedMaterial))
-      .forEach((material, matchingStates) -> mostUsedMaterials.add(new MaterialDTO(material, matchingStates.size())));
-
-    return mostUsedMaterials;
+  public Collection<MaterialDTO> getMaterialsUsed(DateRange dateRange) {
+    return eventsStatistics.calculateMaterialsUsage(dateRange);
   }
 
   public Collection<OptimizationDTO> getOptimizationsProcessed(DateRange dateRange) {
-    SortedSet<OptimizationDTO> optimizations = new TreeSet<>(Collections.reverseOrder());
-
-    transitedStates.stream()
-      .filter(state -> (state.machineEntersBetween(dateRange) && state.processWasFinished(ProcessName.CUT)))
-      .collect(groupingBy(TwinState::getProcessedOptimization, groupingBy(TwinState::getProcessedMaterial)))
-      .forEach((optimization, group) ->
-                 group.forEach((material, matchingStates) ->
-                                 optimizations.add(new OptimizationDTO(optimization, material, matchingStates.size()))));
-
-    return optimizations;
+    return eventsStatistics.calculateOptimizationsProcessed(dateRange);
   }
 
-  public ToolsInfoDTO getToolsInfo(DateRange dateRange) {
-    AtomicLong distanceCovered = new AtomicLong();
-    AtomicInteger cuttingAngle = new AtomicInteger();
-    AtomicInteger wheelDiameter = new AtomicInteger();
-
-    transitedStates.stream()
-      .filter(state -> (state.machineEntersBetween(dateRange) && state.processWasFinished(ProcessName.CUT)))
-      .reduce((first, second) -> second)
-      .ifPresent(
-        state -> {
-          cuttingAngle.set(state.getToolAngle());
-          distanceCovered.set(state.getToolDistanceCovered());
-        });
-
-    transitedStates.stream()
-      .filter(state -> (state.machineEntersBetween(dateRange) && state.processWasFinished(ProcessName.LOWE)))
-      .reduce((first, second) -> second)
-      .ifPresent(state -> wheelDiameter.set(state.getWheelDiameter()));
-
-    return new ToolsInfoDTO(distanceCovered.get(), cuttingAngle.get(), wheelDiameter.get());
+  public ToolsDTO getToolsInfo(DateRange dateRange) {
+    return eventsStatistics.calculateToolsInfo(dateRange);
   }
 
-  public Collection<BreakdownDTO> getBreakdownsOccurred(DateRange dateRange) {
-    SortedSet<BreakdownDTO> breakdownsRanking = new TreeSet<>(Collections.reverseOrder());
-
-    transitedStates.stream()
-      .filter(state -> (state.machineEntersBetween(dateRange) && state.machineFiresError()))
-      .collect(groupingBy(TwinState::getErrorName))
-      .forEach((error, matchingStates) -> breakdownsRanking.add(new BreakdownDTO(error, matchingStates.size())));
-
-    return breakdownsRanking;
+  public Collection<ErrorDTO> getErrorsProduced(DateRange dateRange) {
+    return eventsStatistics.calculateErrorsProduced(dateRange);
   }
 }

@@ -1,4 +1,4 @@
-package com.turomas.smartglass.twins.domain.dto;
+package com.turomas.smartglass.twins.domain.dtos.statistics;
 
 import lombok.Getter;
 

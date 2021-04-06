@@ -9,9 +9,10 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 
-@Document(collection = "machineEvent-Marzo")
+@Document(collection = "events")
 @Getter
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Event implements Comparable<Event> {
   @Id
   @EqualsAndHashCode.Include
@@ -31,34 +32,40 @@ public class Event implements Comparable<Event> {
 
   private LocalDateTime timestamp;
 
+  public boolean typeIs(EventType type) {
+    if (type != null) {
+      return this.type.equals(type);
+    }
+
+    return false;
+  }
+
   public boolean machineStartsProcess() {
-    return (type.equals(EventType.START_PROCESS));
+    return typeIs(EventType.START_PROCESS);
   }
 
-  public boolean validStartProcess(Event event) {
-    return ((event != null)
-            && event.machineStartsProcess()
-            && (event.machineName.equals(machineName)));
-  }
-
-  public boolean machineFiresError() {
-    return (type.equals(EventType.ERROR));
-  }
-
-  public boolean machineEndsProcess(Event event) {
-    return (validStartProcess(event)
-            && (type.equals(EventType.END_PROCESS))
+  public boolean isFinalizedBy(Event event) {
+    return (machineStartsProcess()
+            && (event.type.equals(EventType.END_PROCESS))
             && (params != null)
             && (event.params != null)
             && (params.equals(event.params)));
   }
 
-  public void updateStartEvent(Event event) {
-    if (validStartProcess(event) && machineStartsProcess()) {
+  public void update(Event event) {
+    if (event != null) {
       id = event.id;
       params = event.params;
       timestamp = event.timestamp;
     }
+  }
+
+  public boolean finalizesProcess(ProcessName processName) {
+    if (typeIs(EventType.END_PROCESS)) {
+      return params.getProcessName().equals(processName);
+    }
+
+    return false;
   }
 
   @Override

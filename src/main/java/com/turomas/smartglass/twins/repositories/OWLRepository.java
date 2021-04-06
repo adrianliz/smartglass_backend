@@ -7,11 +7,11 @@ import com.google.gson.reflect.TypeToken;
 import com.turomas.smartglass.events.domain.EventType;
 import com.turomas.smartglass.events.services.EventsService;
 import com.turomas.smartglass.twins.domain.Twin;
-import com.turomas.smartglass.twins.domain.TwinOntology;
-import com.turomas.smartglass.twins.domain.statesmachine.StatesMachine;
+import com.turomas.smartglass.twins.domain.dtos.twins.TwinModelDTO;
 import com.turomas.smartglass.twins.domain.statesmachine.TransitionTrigger;
 import com.turomas.smartglass.twins.domain.statesmachine.TwinStateId;
 import com.turomas.smartglass.twins.repositories.exceptions.TwinNotFound;
+import com.turomas.smartglass.twins.services.StatesService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
@@ -20,25 +20,22 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 // TODO replace with ontology model
 @Repository
-public class OWLTwinsRepository implements TwinsRepository {
-  private final List<Twin> twins;
-  private final Twin twin;
+public class OWLRepository implements TwinsRepository {
+  private final Map<String, Twin> twins;
 
-  public OWLTwinsRepository(EventsService eventsService, @Value("classpath:transitions.json") Resource resourceFile)
+  public OWLRepository(StatesService statesService, EventsService eventsService,
+                       @Value("classpath:transitions.json") Resource resourceFile)
     throws IOException, JsonIOException, JsonSyntaxException {
+
     Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> transitions =
       loadTransitions(new FileReader(resourceFile.getFile()));
 
-    twin = new Twin(
-      new TwinOntology("Turomas1", "RUBI 300 SERIES", "RUBI 303BA"),
-      new StatesMachine(transitions), eventsService);
-
-    twins = List.of(twin);
+    twins = new HashMap<>();
+    twins.put("Turomas1", new Twin("Turomas1", statesService, eventsService, transitions));
   }
 
   private Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> loadTransitions(Reader file)
@@ -52,13 +49,29 @@ public class OWLTwinsRepository implements TwinsRepository {
   }
 
   @Override
-  public List<Twin> getTwins() {
-    return twins;
+  public Collection<Twin> getTwins() {
+    return twins.values();
   }
 
   @Override
-  public Twin getTwin(String name) throws TwinNotFound {
-    if (name.equals("Turomas1")) return twin;
-    throw new TwinNotFound(name);
+  public Twin getTwin(String twinName) throws TwinNotFound {
+    return Optional.ofNullable(twins.get(twinName)).orElseThrow(() -> new TwinNotFound(twinName));
+  }
+
+  @Override
+  public TwinModelDTO getTwinModel(String twinName) throws TwinNotFound {
+    Twin twin = getTwin(twinName);
+    return new TwinModelDTO(twinName, "RUBI 300 SERIES", "RUBI 303BA", twin.getCurrentState());
+  }
+
+  @Override
+  public Collection<TwinModelDTO> getTwinModels() {
+    List<TwinModelDTO> twinsModels = new ArrayList<>();
+
+    for (String twinName : twins.keySet()) {
+      twinsModels.add(getTwinModel(twinName));
+    }
+
+    return twinsModels;
   }
 }
