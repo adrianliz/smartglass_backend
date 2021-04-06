@@ -13,9 +13,13 @@ También, se podrán generar distintas estadísticas derivadas de los resultados
 
 ## Versiones disponibles
 
-- :white_check_mark: v0.1.0 -> Lectura de los eventos producidos de una base de datos MongoDB
-- :white_check_mark: v0.2.0 -> REST endpoint de consulta de los eventos producidos + Swagger (documentación API)
-- :white_check_mark: v0.3.0 -> División en módulos, REST endpoint para los gemelos digitales y cálculo de la
+- :white_check_mark: v0.1.0 → Lectura de los eventos producidos de una base de datos MongoDB
+- :white_check_mark: v0.2.0 → REST endpoint de consulta de los eventos producidos + Swagger (documentación API)
+- :white_check_mark: v0.3.0 → División en módulos, REST endpoint para los gemelos digitales y cálculo de la
   disponibilidad para un periodo temporal
-- :white_check_mark: v0.4.0 -> Primera versión de los cálculos de los distintos ratios para un periodo temporal
-- :white_check_mark: v0.5.0 -> Cálculo de estadísticas y ratios
+- :white_check_mark: v0.4.0 → Primera versión de los cálculos de los distintos ratios para un periodo temporal
+- :white_check_mark: v0.5.0 → Cálculo de estadísticas y ratios
+- :white_check_mark: v0.6.0 → BREAKING CHANGE: Simplificación del cálculo de las estadísticas asociadas a los estados
+  de cada gemelo, persistiendo los estados por los que estos transitan y consultándolos cuando es necesario, en vez de
+  mantener en memoria dichos estados y volver a calcularlos en cada reinicio del servidor
+    

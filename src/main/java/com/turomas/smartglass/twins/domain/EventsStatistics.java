@@ -19,87 +19,87 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.groupingBy;
 
 public class EventsStatistics {
-	private final String twinName;
-	private final EventsService eventsService;
+  private final String twinName;
+  private final EventsService eventsService;
 
-	public EventsStatistics(String twinName, EventsService eventsService) {
-		this.twinName = twinName;
-		this.eventsService = eventsService;
-	}
+  public EventsStatistics(String twinName, EventsService eventsService) {
+    this.twinName = twinName;
+    this.eventsService = eventsService;
+  }
 
-	private Stream<Event> filterEvents(Collection<Event> events, Predicate<Event> condition) {
-		return events.stream().filter(condition);
-	}
+  private Stream<Event> filterEvents(Collection<Event> events, Predicate<Event> condition) {
+    return events.stream().filter(condition);
+  }
 
-	private <K> Map<K, Long> groupAndCount(Stream<Event> events, Function<Event, K> classifier) {
-		return events.collect(groupingBy(classifier, Collectors.counting()));
-	}
+  private <K> Map<K, Long> groupAndCount(Stream<Event> events, Function<Event, K> classifier) {
+    return events.collect(groupingBy(classifier, Collectors.counting()));
+  }
 
-	private Optional<Event> getLastEvent(Stream<Event> events) {
-		return events.reduce((first, last) -> last);
-	}
+  private Optional<Event> getLastEvent(Stream<Event> events) {
+    return events.reduce((first, last) -> last);
+  }
 
-	private boolean eventFinalizesProcess(Event event, ProcessName processName) {
-		return event.finalizesProcess(processName);
-	}
+  private boolean eventFinalizesProcess(Event event, ProcessName processName) {
+    return event.finalizesProcess(processName);
+  }
 
-	private boolean materialWasCut(Event event) {
-		return (eventFinalizesProcess(event, ProcessName.CUT) && (event.getParams().getMaterial() != null));
-	}
+  private boolean materialWasCut(Event event) {
+    return (eventFinalizesProcess(event, ProcessName.CUT) && (event.getParams().getMaterial() != null));
+  }
 
-	public Collection<MaterialDTO> calculateMaterialsUsage(DateRange dateRange) {
-		Collection<Event> events =
-			eventsService.getEventsBetween(twinName, dateRange.getStartDate(), dateRange.getEndDate());
-		SortedSet<MaterialDTO> materialsUsed = new TreeSet<>(Collections.reverseOrder());
+  public Collection<MaterialDTO> calculateMaterialsUsage(DateRange dateRange) {
+    Collection<Event> events =
+      eventsService.getEventsBetween(twinName, dateRange.getStartDate(), dateRange.getEndDate());
+    SortedSet<MaterialDTO> materialsUsed = new TreeSet<>(Collections.reverseOrder());
 
-		Stream<Event> filteredEvents = filterEvents(events, this::materialWasCut);
-		groupAndCount(filteredEvents, event -> event.getParams().getMaterial())
-			.forEach((name, timesUsed) -> materialsUsed.add(new MaterialDTO(name, timesUsed)));
+    Stream<Event> filteredEvents = filterEvents(events, this::materialWasCut);
+    groupAndCount(filteredEvents, event -> event.getParams().getMaterial())
+      .forEach((name, timesUsed) -> materialsUsed.add(new MaterialDTO(name, timesUsed)));
 
-		return materialsUsed;
-	}
+    return materialsUsed;
+  }
 
-	public Collection<OptimizationDTO> calculateOptimizationsProcessed(DateRange dateRange) {
-		Collection<Event> events =
-			eventsService.getEventsBetween(twinName, dateRange.getStartDate(), dateRange.getEndDate());
-		SortedSet<OptimizationDTO> optimizationsProcessed = new TreeSet<>(Collections.reverseOrder());
+  public Collection<OptimizationDTO> calculateOptimizationsProcessed(DateRange dateRange) {
+    Collection<Event> events =
+      eventsService.getEventsBetween(twinName, dateRange.getStartDate(), dateRange.getEndDate());
+    SortedSet<OptimizationDTO> optimizationsProcessed = new TreeSet<>(Collections.reverseOrder());
 
-		Stream<Event> filteredEvents = filterEvents(events, this::materialWasCut);
-		groupAndCount(filteredEvents,
-		              event -> Pair.of(event.getParams().getOptimizationName(), event.getParams().getMaterial()))
-			.forEach((key, piecesProcessed) -> optimizationsProcessed
-				.add(new OptimizationDTO(key.getFirst(), key.getSecond(), piecesProcessed)));
+    Stream<Event> filteredEvents = filterEvents(events, this::materialWasCut);
+    groupAndCount(filteredEvents,
+                  event -> Pair.of(event.getParams().getOptimizationName(), event.getParams().getMaterial()))
+      .forEach((key, piecesProcessed) -> optimizationsProcessed
+        .add(new OptimizationDTO(key.getFirst(), key.getSecond(), piecesProcessed)));
 
-		return optimizationsProcessed;
-	}
+    return optimizationsProcessed;
+  }
 
-	public ToolsDTO calculateToolsInfo(DateRange dateRange) {
-		Collection<Event> events =
-			eventsService.getEventsBetween(twinName, dateRange.getStartDate(), dateRange.getEndDate());
-		ToolsDTO toolsInfo = new ToolsDTO();
+  public ToolsDTO calculateToolsInfo(DateRange dateRange) {
+    Collection<Event> events =
+      eventsService.getEventsBetween(twinName, dateRange.getStartDate(), dateRange.getEndDate());
+    ToolsDTO toolsInfo = new ToolsDTO();
 
-		Stream<Event> filteredEvents = filterEvents(events, event -> eventFinalizesProcess(event, ProcessName.CUT));
-		getLastEvent(filteredEvents).ifPresent(
-			event -> {
-				toolsInfo.setToolDistanceCovered(event.getParams().getDistanceCovered());
-				toolsInfo.setToolAngle(event.getParams().getToolAngle());
-			});
+    Stream<Event> filteredEvents = filterEvents(events, event -> eventFinalizesProcess(event, ProcessName.CUT));
+    getLastEvent(filteredEvents).ifPresent(
+      event -> {
+        toolsInfo.setToolDistanceCovered(event.getParams().getDistanceCovered());
+        toolsInfo.setToolAngle(event.getParams().getToolAngle());
+      });
 
-		filteredEvents = filterEvents(events, event -> eventFinalizesProcess(event, ProcessName.LOWE));
-		getLastEvent(filteredEvents).ifPresent(event -> toolsInfo.setWheelDiameter(event.getParams().getWheelDiameter()));
+    filteredEvents = filterEvents(events, event -> eventFinalizesProcess(event, ProcessName.LOWE));
+    getLastEvent(filteredEvents).ifPresent(event -> toolsInfo.setWheelDiameter(event.getParams().getWheelDiameter()));
 
-		return toolsInfo;
-	}
+    return toolsInfo;
+  }
 
-	public Collection<ErrorDTO> calculateErrorsProduced(DateRange dateRange) {
-		Collection<Event> events =
-			eventsService.getEventsBetween(twinName, dateRange.getStartDate(), dateRange.getEndDate());
-		SortedSet<ErrorDTO> errorsProduced = new TreeSet<>(Collections.reverseOrder());
+  public Collection<ErrorDTO> calculateErrorsProduced(DateRange dateRange) {
+    Collection<Event> events =
+      eventsService.getEventsBetween(twinName, dateRange.getStartDate(), dateRange.getEndDate());
+    SortedSet<ErrorDTO> errorsProduced = new TreeSet<>(Collections.reverseOrder());
 
-		Stream<Event> filteredEvents = filterEvents(events, event -> event.typeIs(EventType.ERROR));
-		groupAndCount(filteredEvents, Event::getErrorName)
-			.forEach((cause, timesOccurred) -> errorsProduced.add(new ErrorDTO(cause, timesOccurred)));
+    Stream<Event> filteredEvents = filterEvents(events, event -> event.typeIs(EventType.ERROR));
+    groupAndCount(filteredEvents, Event::getErrorName)
+      .forEach((cause, timesOccurred) -> errorsProduced.add(new ErrorDTO(cause, timesOccurred)));
 
-		return errorsProduced;
-	}
+    return errorsProduced;
+  }
 }

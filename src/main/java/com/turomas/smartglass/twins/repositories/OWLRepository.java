@@ -20,50 +20,58 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 // TODO replace with ontology model
 @Repository
 public class OWLRepository implements TwinsRepository {
-	private final List<Twin> twins;
-	private final Twin twin;
+  private final Map<String, Twin> twins;
 
-	public OWLRepository(StatesService statesService, EventsService eventsService,
-	                     @Value("classpath:transitions.json") Resource resourceFile)
-		throws IOException, JsonIOException, JsonSyntaxException {
+  public OWLRepository(StatesService statesService, EventsService eventsService,
+                       @Value("classpath:transitions.json") Resource resourceFile)
+    throws IOException, JsonIOException, JsonSyntaxException {
 
-		Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> transitions =
-			loadTransitions(new FileReader(resourceFile.getFile()));
+    Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> transitions =
+      loadTransitions(new FileReader(resourceFile.getFile()));
 
-		twin = new Twin("Turomas1", statesService, eventsService, transitions);
-		twins = List.of(twin);
-	}
+    twins = new HashMap<>();
+    twins.put("Turomas1", new Twin("Turomas1", statesService, eventsService, transitions));
+  }
 
-	private Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> loadTransitions(Reader file)
-		throws JsonIOException, JsonSyntaxException {
+  private Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> loadTransitions(Reader file)
+    throws JsonIOException, JsonSyntaxException {
 
-		Type type =
-			new TypeToken<Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId>>() {
-			}.getType();
+    Type type =
+      new TypeToken<Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId>>() {
+      }.getType();
 
-		return new GsonBuilder().enableComplexMapKeySerialization().create().fromJson(file, type);
-	}
+    return new GsonBuilder().enableComplexMapKeySerialization().create().fromJson(file, type);
+  }
 
-	@Override
-	public List<Twin> getTwins() {
-		return twins;
-	}
+  @Override
+  public Collection<Twin> getTwins() {
+    return twins.values();
+  }
 
-	@Override
-	public Twin getTwin(String name) throws TwinNotFound {
-		if (name.equals("Turomas1"))
-			return twin;
-		throw new TwinNotFound(name);
-	}
+  @Override
+  public Twin getTwin(String twinName) throws TwinNotFound {
+    return Optional.ofNullable(twins.get(twinName)).orElseThrow(() -> new TwinNotFound(twinName));
+  }
 
-	@Override
-	public TwinModelDTO getTwinModel(String name) throws TwinNotFound {
-		return new TwinModelDTO(name, "RUBI 300 SERIES", "RUBI 303 BA");
-	}
+  @Override
+  public TwinModelDTO getTwinModel(String twinName) throws TwinNotFound {
+    Twin twin = getTwin(twinName);
+    return new TwinModelDTO(twinName, "RUBI 300 SERIES", "RUBI 303BA", twin.getCurrentState());
+  }
+
+  @Override
+  public Collection<TwinModelDTO> getTwinModels() {
+    List<TwinModelDTO> twinsModels = new ArrayList<>();
+
+    for (String twinName : twins.keySet()) {
+      twinsModels.add(getTwinModel(twinName));
+    }
+
+    return twinsModels;
+  }
 }

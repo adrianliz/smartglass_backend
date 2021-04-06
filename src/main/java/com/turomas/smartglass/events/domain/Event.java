@@ -14,62 +14,62 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Event implements Comparable<Event> {
-	@Id
-	@EqualsAndHashCode.Include
-	private String id;
+  @Id
+  @EqualsAndHashCode.Include
+  private String id;
 
-	@Field("type")
-	private final EventType type;
+  @Field("type")
+  private final EventType type;
 
-	@Field("machine")
-	private final String machineName;
+  @Field("machine")
+  private final String machineName;
 
-	@Field("params")
-	private EventParams params;
+  @Field("params")
+  private EventParams params;
 
-	@Field("error_name")
-	private final String errorName;
+  @Field("error_name")
+  private final String errorName;
 
-	private LocalDateTime timestamp;
+  private LocalDateTime timestamp;
 
-	public boolean typeIs(EventType type) {
-		if (type != null) {
-			return this.type.equals(type);
-		}
+  public boolean typeIs(EventType type) {
+    if (type != null) {
+      return this.type.equals(type);
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	public boolean machineStartsProcess() {
-		return typeIs(EventType.START_PROCESS);
-	}
+  public boolean machineStartsProcess() {
+    return typeIs(EventType.START_PROCESS);
+  }
 
-	public boolean isFinalizedBy(Event event) {
-		return (machineStartsProcess()
-		        && (event.type.equals(EventType.END_PROCESS))
-		        && (params != null)
-		        && (event.params != null)
-		        && (params.equals(event.params)));
-	}
+  public boolean isFinalizedBy(Event event) {
+    return (machineStartsProcess()
+            && (event.type.equals(EventType.END_PROCESS))
+            && (params != null)
+            && (event.params != null)
+            && (params.equals(event.params)));
+  }
 
-	public void update(Event event) {
-		if (event != null) {
-			id = event.id;
-			params = event.params;
-			timestamp = event.timestamp;
-		}
-	}
+  public void update(Event event) {
+    if (event != null) {
+      id = event.id;
+      params = event.params;
+      timestamp = event.timestamp;
+    }
+  }
 
-	public boolean finalizesProcess(ProcessName processName) {
-		if (typeIs(EventType.END_PROCESS)) {
-			return params.getProcessName().equals(processName);
-		}
+  public boolean finalizesProcess(ProcessName processName) {
+    if (typeIs(EventType.END_PROCESS)) {
+      return params.getProcessName().equals(processName);
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	@Override
-	public int compareTo(Event event) {
-		return timestamp.compareTo(event.timestamp);
-	}
+  @Override
+  public int compareTo(Event event) {
+    return timestamp.compareTo(event.timestamp);
+  }
 }

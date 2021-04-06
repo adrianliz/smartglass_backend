@@ -4,9 +4,9 @@ import com.turomas.smartglass.events.domain.Event;
 import com.turomas.smartglass.twins.domain.statesmachine.InconsistencyStrategy;
 
 public class UpdatePreviousEvent implements InconsistencyStrategy {
-	public void fixInconsistency(Event previousEvent, Event currentEvent) {
-		if ((previousEvent != null) && (currentEvent != null)) {
-			previousEvent.update(currentEvent);
-		}
-	}
+  public void fixInconsistency(Event previousEvent, Event currentEvent) {
+    if ((previousEvent != null) && (currentEvent != null)) {
+      previousEvent.update(currentEvent);
+    }
+  }
 }

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ToolsDTO {
-	private long toolDistanceCovered; // 0.1mm
-	private int toolAngle; // mm
-	private int wheelDiameter; // 0.1mm
+  private long toolDistanceCovered; // 0.1mm
+  private int toolAngle; // mm
+  private int wheelDiameter; // 0.1mm
 }

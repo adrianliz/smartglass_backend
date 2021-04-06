@@ -8,19 +8,19 @@ import lombok.Getter;
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class OptimizationDTO implements Comparable<OptimizationDTO> {
-	@EqualsAndHashCode.Include
-	private final String name;
-	@EqualsAndHashCode.Include
-	private final String material;
-	private final long piecesProcessed;
+  @EqualsAndHashCode.Include
+  private final String name;
+  @EqualsAndHashCode.Include
+  private final String material;
+  private final long piecesProcessed;
 
-	@Override
-	public int compareTo(OptimizationDTO optimization) {
-		if (this.equals(optimization)) return 0;
-		if (piecesProcessed > optimization.piecesProcessed) {
-			return 1;
-		}
-		return - 1;
+  @Override
+  public int compareTo(OptimizationDTO optimization) {
+    if (this.equals(optimization)) return 0;
+    if (piecesProcessed > optimization.piecesProcessed) {
+      return 1;
+    }
+    return - 1;
 
-	}
+  }
 }

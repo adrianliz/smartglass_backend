@@ -13,32 +13,32 @@ import java.util.Optional;
 
 @Service
 public class StatesProxy implements StatesService {
-	private final StatesRepository statesRepository;
+  private final StatesRepository statesRepository;
 
-	public StatesProxy(StatesRepository statesRepository) {
-		this.statesRepository = statesRepository;
-	}
+  public StatesProxy(StatesRepository statesRepository) {
+    this.statesRepository = statesRepository;
+  }
 
-	@Override
-	public Optional<TwinState> getLastState(String twinName) {
-		PageRequest request =
-			PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "enterEvent.timestamp"));
+  @Override
+  public Optional<TwinState> getLastState(String twinName) {
+    PageRequest request =
+      PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "enterEvent.timestamp"));
 
-		List<TwinState> states = statesRepository.getStates(twinName, request).getContent();
-		if (! states.isEmpty()) {
-			return Optional.of(states.get(0));
-		}
+    List<TwinState> states = statesRepository.getStates(twinName, request).getContent();
+    if (! states.isEmpty()) {
+      return Optional.of(states.get(0));
+    }
 
-		return Optional.empty();
-	}
+    return Optional.empty();
+  }
 
-	@Override
-	public Collection<TwinState> getStatesBetween(String twinName, LocalDateTime startDate, LocalDateTime endDate) {
-		return statesRepository.getStatesBetween(twinName, startDate, endDate);
-	}
+  @Override
+  public Collection<TwinState> getStatesBetween(String twinName, LocalDateTime startDate, LocalDateTime endDate) {
+    return statesRepository.getStatesBetween(twinName, startDate, endDate);
+  }
 
-	@Override
-	public void saveStates(Collection<TwinState> states) {
-		statesRepository.saveAll(states);
-	}
+  @Override
+  public void saveStates(Collection<TwinState> states) {
+    statesRepository.saveAll(states);
+  }
 }

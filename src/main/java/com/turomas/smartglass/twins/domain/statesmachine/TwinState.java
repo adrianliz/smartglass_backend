@@ -20,64 +20,64 @@ import java.time.Duration;
 @NoArgsConstructor // Necessary for Spring Data MongoDB Repository (TODO use Mongo Template instead of Repository)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class TwinState implements Comparable<TwinState> {
-	@Id
-	@EqualsAndHashCode.Include
-	private String id;
+  @Id
+  @EqualsAndHashCode.Include
+  private String id;
 
-	@Field("twinStateId")
-	private TwinStateId twinStateId;
+  @Field("twinStateId")
+  private TwinStateId twinStateId;
 
-	@Field("twinName")
-	private String twinName;
+  @Field("twinName")
+  private String twinName;
 
-	@Field("enterEvent")
-	private Event enterEvent;
+  @Field("enterEvent")
+  private Event enterEvent;
 
-	@Field("lastEventEvaluated")
-	private Event lastEventEvaluated;
+  @Field("lastEventEvaluated")
+  private Event lastEventEvaluated;
 
-	public TwinState(TwinStateId twinStateId, String twinName) {
-		this(new ObjectId().toString(), twinStateId, twinName, null, null);
-	}
+  public TwinState(TwinStateId twinStateId, String twinName) {
+    this(new ObjectId().toString(), twinStateId, twinName, null, null);
+  }
 
-	public TwinState(TwinStateId twinStateId, String twinName, Event enterEvent) {
-		this(new ObjectId().toString(), twinStateId, twinName, enterEvent, enterEvent);
-	}
+  public TwinState(TwinStateId twinStateId, String twinName, Event enterEvent) {
+    this(new ObjectId().toString(), twinStateId, twinName, enterEvent, enterEvent);
+  }
 
-	public void updateLastEventEvaluated(Event event) {
-		this.lastEventEvaluated = event;
-	}
+  public void updateLastEventEvaluated(Event event) {
+    this.lastEventEvaluated = event;
+  }
 
-	public long durationSeconds() {
-		if ((enterEvent != null) && (lastEventEvaluated != null)) {
-			return (Duration.between(enterEvent.getTimestamp(), lastEventEvaluated.getTimestamp()).getSeconds());
-		}
-		return 0;
-	}
+  public long durationSeconds() {
+    if ((enterEvent != null) && (lastEventEvaluated != null)) {
+      return (Duration.between(enterEvent.getTimestamp(), lastEventEvaluated.getTimestamp()).getSeconds());
+    }
+    return 0;
+  }
 
-	public boolean stateIdIs(TwinStateId twinStateId) {
-		if (twinStateId != null) {
-			return twinStateId.equals(this.twinStateId);
-		}
-		return false;
-	}
+  public boolean stateIdIs(TwinStateId twinStateId) {
+    if (twinStateId != null) {
+      return twinStateId.equals(this.twinStateId);
+    }
+    return false;
+  }
 
-	public boolean lastEventTypeIs(EventType eventType) {
-		if (eventType != null) {
-			return lastEventEvaluated.typeIs(eventType);
-		}
-		return false;
-	}
+  public boolean lastEventTypeIs(EventType eventType) {
+    if (eventType != null) {
+      return lastEventEvaluated.typeIs(eventType);
+    }
+    return false;
+  }
 
-	public boolean stateIsDoing(ProcessName processName) {
-		if (stateIdIs(TwinStateId.DOING_PROCESS) && (processName != null)) {
-			return enterEvent.getParams().getProcessName().equals(processName);
-		}
-		return false;
-	}
+  public boolean stateIsDoing(ProcessName processName) {
+    if (stateIdIs(TwinStateId.DOING_PROCESS) && (processName != null)) {
+      return enterEvent.getParams().getProcessName().equals(processName);
+    }
+    return false;
+  }
 
-	@Override
-	public int compareTo(TwinState twinState) {
-		return id.compareTo(twinState.id);
-	}
+  @Override
+  public int compareTo(TwinState twinState) {
+    return id.compareTo(twinState.id);
+  }
 }
