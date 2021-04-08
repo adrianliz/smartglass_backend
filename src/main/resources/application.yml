@@ -3,5 +3,9 @@ spring:
     mongodb:
       uri: mongodb://adrian:turoMas%24@155.210.68.101:27017/turomas?serverSelectionTimeoutMS=5000&connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-256
 
+collections:
+  events: events
+  states: states
+
 states:
   updateDelay: 5000

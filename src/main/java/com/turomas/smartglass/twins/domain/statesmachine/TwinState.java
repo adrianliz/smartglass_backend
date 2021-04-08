@@ -1,51 +1,71 @@
 package com.turomas.smartglass.twins.domain.statesmachine;
 
+import com.mongodb.lang.NonNull;
 import com.turomas.smartglass.events.domain.Event;
 import com.turomas.smartglass.events.domain.EventType;
 import com.turomas.smartglass.events.domain.ProcessName;
+import com.turomas.smartglass.events.services.EventsService;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Duration;
+import java.util.Collection;
 
 @Document(collection = "states")
-@Getter
 @AllArgsConstructor
-@NoArgsConstructor // Necessary for Spring Data MongoDB Repository (TODO use Mongo Template instead of Repository)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class TwinState implements Comparable<TwinState> {
   @Id
   @EqualsAndHashCode.Include
-  private String id;
+  @NonNull
+  private final String id;
 
   @Field("twinStateId")
-  private TwinStateId twinStateId;
+  @NonNull
+  @Getter
+  private final TwinStateId twinStateId;
 
   @Field("twinName")
-  private String twinName;
+  @NonNull
+  @Getter
+  private final String twinName;
 
   @Field("enterEvent")
-  private Event enterEvent;
+  private final Event enterEvent;
 
   @Field("lastEventEvaluated")
   private Event lastEventEvaluated;
 
-  public TwinState(TwinStateId twinStateId, String twinName) {
-    this(new ObjectId().toString(), twinStateId, twinName, null, null);
+  public static TwinState of(TwinStateId twinStateId, String twinName) {
+    return new TwinState(new ObjectId().toString(), twinStateId, twinName, null, null);
   }
 
-  public TwinState(TwinStateId twinStateId, String twinName, Event enterEvent) {
-    this(new ObjectId().toString(), twinStateId, twinName, enterEvent, enterEvent);
+  public static TwinState of(TwinStateId twinStateId, String twinName, Event enterEvent) {
+    return new TwinState(new ObjectId().toString(), twinStateId, twinName, enterEvent, enterEvent);
+  }
+
+  public Collection<Event> getSubsequentEvents(EventsService eventsService) {
+    if (lastEventEvaluated != null) {
+      return eventsService.getSubsequentEvents(twinName, lastEventEvaluated.getTimestamp());
+    }
+
+    return eventsService.getEvents(twinName);
+  }
+
+  public boolean eventsHaveSameParams() {
+    return ((enterEvent != null) &&
+            enterEvent.hasSameParams(lastEventEvaluated));
   }
 
   public void updateLastEventEvaluated(Event event) {
-    this.lastEventEvaluated = event;
+    if (event != null) {
+      this.lastEventEvaluated = event;
+    }
   }
 
   public long durationSeconds() {
@@ -56,24 +76,18 @@ public class TwinState implements Comparable<TwinState> {
   }
 
   public boolean stateIdIs(TwinStateId twinStateId) {
-    if (twinStateId != null) {
-      return twinStateId.equals(this.twinStateId);
-    }
-    return false;
+    return this.twinStateId.equals(twinStateId);
   }
 
   public boolean lastEventTypeIs(EventType eventType) {
-    if (eventType != null) {
-      return lastEventEvaluated.typeIs(eventType);
-    }
-    return false;
+    return ((lastEventEvaluated != null)
+            && (lastEventEvaluated.typeIs(eventType)));
   }
 
   public boolean stateIsDoing(ProcessName processName) {
-    if (stateIdIs(TwinStateId.DOING_PROCESS) && (processName != null)) {
-      return enterEvent.getParams().getProcessName().equals(processName);
-    }
-    return false;
+    return (stateIdIs(TwinStateId.DOING_PROCESS)
+            && (enterEvent != null)
+            && (enterEvent.processIs(processName)));
   }
 
   @Override

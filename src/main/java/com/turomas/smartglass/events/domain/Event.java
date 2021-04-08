@@ -1,5 +1,6 @@
 package com.turomas.smartglass.events.domain;
 
+import com.mongodb.lang.NonNull;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -10,62 +11,43 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.time.LocalDateTime;
 
 @Document(collection = "events")
-@Getter
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Event implements Comparable<Event> {
   @Id
   @EqualsAndHashCode.Include
-  private String id;
+  @NonNull
+  private final String id;
 
   @Field("type")
+  @NonNull
+  @Getter
   private final EventType type;
 
-  @Field("machine")
-  private final String machineName;
-
   @Field("params")
-  private EventParams params;
+  @Getter
+  private final EventParams params;
 
   @Field("error_name")
+  @Getter
   private final String errorName;
 
-  private LocalDateTime timestamp;
+  @Field("timestamp")
+  @NonNull
+  @Getter
+  private final LocalDateTime timestamp;
 
   public boolean typeIs(EventType type) {
-    if (type != null) {
-      return this.type.equals(type);
-    }
-
-    return false;
+    return this.type.equals(type);
   }
 
-  public boolean machineStartsProcess() {
-    return typeIs(EventType.START_PROCESS);
+  public boolean hasSameParams(Event event) {
+    return ((params != null) && params.equals(event.params));
   }
 
-  public boolean isFinalizedBy(Event event) {
-    return (machineStartsProcess()
-            && (event.type.equals(EventType.END_PROCESS))
-            && (params != null)
-            && (event.params != null)
-            && (params.equals(event.params)));
-  }
-
-  public void update(Event event) {
-    if (event != null) {
-      id = event.id;
-      params = event.params;
-      timestamp = event.timestamp;
-    }
-  }
-
-  public boolean finalizesProcess(ProcessName processName) {
-    if (typeIs(EventType.END_PROCESS)) {
-      return params.getProcessName().equals(processName);
-    }
-
-    return false;
+  public boolean processIs(ProcessName processName) {
+    return ((params != null)
+            && params.processIs(processName));
   }
 
   @Override

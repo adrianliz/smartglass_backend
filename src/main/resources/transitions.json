@@ -110,5 +110,12 @@
       "event": "END_PROCESS"
     },
     "IN_STANDBY"
+  ],
+  [
+    {
+      "state": "DOING_PROCESS",
+      "event": "START_PROCESS"
+    },
+    "DOING_PROCESS"
   ]
 ]

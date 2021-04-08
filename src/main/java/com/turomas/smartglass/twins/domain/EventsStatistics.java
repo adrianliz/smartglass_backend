@@ -40,7 +40,7 @@ public class EventsStatistics {
   }
 
   private boolean eventFinalizesProcess(Event event, ProcessName processName) {
-    return event.finalizesProcess(processName);
+    return (event.typeIs(EventType.END_PROCESS) && event.processIs(processName));
   }
 
   private boolean materialWasCut(Event event) {

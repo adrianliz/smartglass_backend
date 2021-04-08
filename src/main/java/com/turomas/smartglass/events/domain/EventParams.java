@@ -1,5 +1,6 @@
 package com.turomas.smartglass.events.domain;
 
+import com.mongodb.lang.NonNull;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -8,19 +9,22 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor // Necessary for Spring Data MongoDB Repository (TODO use Mongo Template instead of Repository)
+@NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class EventParams {
   @EqualsAndHashCode.Include
   @Field("process_name")
+  @NonNull
   private ProcessName processName;
 
   @EqualsAndHashCode.Include
   @Field("optimization_name")
+  @NonNull
   private String optimizationName;
 
   @EqualsAndHashCode.Include
   @Field("cut_plan_id")
+  @NonNull
   private int cutPlanId;
 
   @Field("material")
@@ -34,4 +38,8 @@ public class EventParams {
 
   @Field("wheel_size")
   private int wheelDiameter; // mm
+
+  public boolean processIs(ProcessName processName) {
+    return this.processName.equals(processName);
+  }
 }

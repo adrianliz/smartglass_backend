@@ -23,9 +23,9 @@ public class OWLRepository implements TwinsRepository {
     // TODO replace with query that retrieves twins from OWL graph database
     twins = new HashMap<>();
     String twinName = "Turomas1";
-    twins.put(twinName, new Twin(twinName, new StatesStatistics(twinName, statesService),
-                                 new EventsStatistics(twinName, eventsService),
-                                 statesMachineFactory.createFor(twinName)));
+    twins.put(twinName, new Twin(statesMachineFactory.createFor(twinName),
+                                 new StatesStatistics(twinName, statesService),
+                                 new EventsStatistics(twinName, eventsService)));
   }
 
   @Override
