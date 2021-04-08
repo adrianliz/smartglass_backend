@@ -1,40 +1,28 @@
 package com.turomas.smartglass.twins.domain;
 
 import com.turomas.smartglass.events.domain.Event;
-import com.turomas.smartglass.events.domain.EventType;
 import com.turomas.smartglass.events.services.EventsService;
 import com.turomas.smartglass.twins.domain.dtos.statistics.*;
 import com.turomas.smartglass.twins.domain.statesmachine.StatesMachine;
-import com.turomas.smartglass.twins.domain.statesmachine.TransitionTrigger;
 import com.turomas.smartglass.twins.domain.statesmachine.TwinState;
 import com.turomas.smartglass.twins.domain.statesmachine.TwinStateId;
-import com.turomas.smartglass.twins.services.StatesService;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
 import java.util.TreeSet;
 
 public class Twin {
   private final String name;
   private final StatesStatistics statesStatistics;
   private final EventsStatistics eventsStatistics;
-  private StatesMachine statesMachine;
+  private final StatesMachine statesMachine;
 
-  public Twin(String name, StatesService statesService, EventsService eventsService,
-              Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> transitions) {
+  public Twin(String name, StatesStatistics statesStatistics, EventsStatistics eventsStatistics,
+              StatesMachine statesMachine) {
+
     this.name = name;
-    statesStatistics = new StatesStatistics(name, statesService);
-    eventsStatistics = new EventsStatistics(name, eventsService);
-
-    createStatesMachine(transitions, statesService);
-  }
-
-  private void createStatesMachine(Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> transitions,
-                                   StatesService statesService) {
-    Optional<TwinState> initialState = statesService.getLastState(name);
-    statesMachine =
-      new StatesMachine(initialState.orElse(new TwinState(TwinStateId.OFF, name)), transitions);
+    this.statesStatistics = statesStatistics;
+    this.eventsStatistics = eventsStatistics;
+    this.statesMachine = statesMachine;
   }
 
   private Collection<Event> getNewEvents(EventsService eventsService) {
