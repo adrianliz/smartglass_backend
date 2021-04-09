@@ -6,7 +6,7 @@ import com.turomas.smartglass.twins.domain.dtos.statistics.MachineUsageDTO;
 import com.turomas.smartglass.twins.domain.dtos.statistics.RatioDTO;
 import com.turomas.smartglass.twins.domain.dtos.statistics.TimeDistributionDTO;
 import com.turomas.smartglass.twins.domain.statesmachine.TwinState;
-import com.turomas.smartglass.twins.domain.statesmachine.TwinStateId;
+import com.turomas.smartglass.twins.domain.statesmachine.TwinStateType;
 import com.turomas.smartglass.twins.services.StatesService;
 
 import java.util.Collection;
@@ -36,14 +36,14 @@ public class StatesStatistics {
     Collection<TwinState> states =
       statesService.getStatesBetween(twinName, dateRange.getStartDate(), dateRange.getEndDate());
 
-    long workingSeconds = totalSecondsIf(states, state -> state.stateIdIs(TwinStateId.DOING_PROCESS));
-    long standbySeconds = totalSecondsIf(states, state -> state.stateIdIs(TwinStateId.IN_STANDBY));
-    long breakdownSeconds = totalSecondsIf(states, state -> state.stateIdIs(TwinStateId.IN_BREAKDOWN));
-    long offSeconds = totalSecondsIf(states, state -> state.stateIdIs(TwinStateId.OFF));
+    long workingSeconds = totalSecondsIf(states, state -> state.typeIs(TwinStateType.DOING_PROCESS));
+    long standbySeconds = totalSecondsIf(states, state -> state.typeIs(TwinStateType.IN_STANDBY));
+    long breakdownSeconds = totalSecondsIf(states, state -> state.typeIs(TwinStateType.IN_BREAKDOWN));
+    long offSeconds = totalSecondsIf(states, state -> state.typeIs(TwinStateType.OFF));
     long completedProcesses = totalStatesThat(states, state ->
-      state.stateIdIs(TwinStateId.DOING_PROCESS) && state.lastEventTypeIs(EventType.END_PROCESS));
+      state.typeIs(TwinStateType.DOING_PROCESS) && state.lastEventTypeIs(EventType.END_PROCESS));
     long abortedProcesses = totalStatesThat(states, state ->
-      state.stateIdIs(TwinStateId.DOING_PROCESS) && state.lastEventTypeIs(EventType.ERROR));
+      state.typeIs(TwinStateType.DOING_PROCESS) && state.lastEventTypeIs(EventType.ERROR));
 
     return List.of(
       new RatioDTO(AVAILABILITY, (workingSeconds + standbySeconds), (breakdownSeconds + offSeconds)),
@@ -55,9 +55,10 @@ public class StatesStatistics {
     Collection<TwinState> states =
       statesService.getStatesBetween(twinName, dateRange.getStartDate(), dateRange.getEndDate());
 
-    long workingSeconds = totalSecondsIf(states, state -> state.stateIdIs(TwinStateId.DOING_PROCESS));
-    long onSeconds = totalSecondsIf(states, state -> state.stateIdIs(TwinStateId.IN_STANDBY)) +
-                     totalSecondsIf(states, state -> state.stateIdIs(TwinStateId.IN_BREAKDOWN));
+    long workingSeconds = totalSecondsIf(states, state -> state.typeIs(TwinStateType.DOING_PROCESS));
+    long onSeconds = totalSecondsIf(states, state -> state.typeIs(TwinStateType.IN_STANDBY)) +
+                     totalSecondsIf(states, state -> state.typeIs(TwinStateType.IN_BREAKDOWN)) +
+                     totalSecondsIf(states, state -> state.typeIs(TwinStateType.DOING_PROCESS));
 
     return new MachineUsageDTO(dateRange.getEndDate(), workingSeconds, onSeconds);
   }
@@ -66,10 +67,10 @@ public class StatesStatistics {
     Collection<TwinState> states =
       statesService.getStatesBetween(twinName, dateRange.getStartDate(), dateRange.getEndDate());
 
-    long processingGlassSeconds = totalSecondsIf(states, state -> state.stateIsDoing(ProcessName.CUT)) +
-                                  totalSecondsIf(states, state -> state.stateIsDoing(ProcessName.LOWE));
-    long loadingGlassSeconds = totalSecondsIf(states, state -> state.stateIsDoing(ProcessName.LOAD_GLASS));
-    long standbySeconds = totalSecondsIf(states, state -> state.stateIdIs(TwinStateId.IN_STANDBY));
+    long processingGlassSeconds = totalSecondsIf(states, state -> state.starts(ProcessName.CUT)) +
+                                  totalSecondsIf(states, state -> state.starts(ProcessName.LOWE));
+    long loadingGlassSeconds = totalSecondsIf(states, state -> state.starts(ProcessName.LOAD_GLASS));
+    long standbySeconds = totalSecondsIf(states, state -> state.typeIs(TwinStateType.IN_STANDBY));
 
     return new TimeDistributionDTO(processingGlassSeconds, loadingGlassSeconds, standbySeconds);
   }

@@ -1,14 +1,21 @@
 package com.turomas.smartglass.events.domain;
 
 import com.mongodb.lang.NonNull;
+import com.turomas.smartglass.events.services.EventsService;
+import com.turomas.smartglass.twins.domain.statesmachine.TwinStateType;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.util.Pair;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
 @Document(collection = "events")
 @AllArgsConstructor
@@ -21,7 +28,6 @@ public class Event implements Comparable<Event> {
 
   @Field("type")
   @NonNull
-  @Getter
   private final EventType type;
 
   @Field("params")
@@ -34,20 +40,43 @@ public class Event implements Comparable<Event> {
 
   @Field("timestamp")
   @NonNull
-  @Getter
   private final LocalDateTime timestamp;
 
   public boolean typeIs(EventType type) {
     return this.type.equals(type);
   }
 
-  public boolean hasSameParams(Event event) {
+  public boolean paramsMatchWith(Event event) {
     return ((params != null) && params.equals(event.params));
   }
 
   public boolean processIs(ProcessName processName) {
     return ((params != null)
             && params.processIs(processName));
+  }
+
+  public long secondsUntil(Event event) {
+    if (event != null) {
+      return (Duration.between(timestamp, event.timestamp).getSeconds());
+    }
+
+    return 0;
+  }
+
+  public Collection<Event> getSubsequentEvents(String twinName, EventsService eventsService) {
+    if (eventsService != null) {
+      return eventsService.getSubsequentEvents(twinName, timestamp);
+    }
+
+    return Collections.emptyList();
+  }
+
+  public Optional<Pair<TwinStateType, EventType>> createTransitionTriggerFor(TwinStateType stateId) {
+    if (stateId != null) {
+      return Optional.of(Pair.of(stateId, type));
+    }
+
+    return Optional.empty();
   }
 
   @Override

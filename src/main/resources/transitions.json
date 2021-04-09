@@ -1,121 +1,121 @@
 [
-  [
-    {
-      "state": "OFF",
-      "event": "OK"
+  {
+    "trigger": {
+      "stateType": "OFF",
+      "eventType": "POWER_ON"
     },
-    "IN_BREAKDOWN"
-  ],
-  [
-    {
-      "state": "OFF",
-      "event": "POWER_ON"
+    "nextStateType": "IN_BREAKDOWN"
+  },
+  {
+    "trigger": {
+      "stateType": "OFF",
+      "eventType": "OK"
     },
-    "IN_BREAKDOWN"
-  ],
-  [
-    {
-      "state": "OFF",
-      "event": "START_PROCESS"
+    "nextStateType": "IN_BREAKDOWN"
+  },
+  {
+    "trigger": {
+      "stateType": "OFF",
+      "eventType": "START_PROCESS"
     },
-    "DOING_PROCESS"
-  ],
-  [
-    {
-      "state": "OFF",
-      "event": "UNDEFINED"
+    "nextStateType": "DOING_PROCESS"
+  },
+  {
+    "trigger": {
+      "stateType": "OFF",
+      "eventType": "UNDEFINED"
     },
-    "IN_STANDBY"
-  ],
-  [
-    {
-      "state": "IN_BREAKDOWN",
-      "event": "OK"
+    "nextStateType": "IN_STANDBY"
+  },
+  {
+    "trigger": {
+      "stateType": "IN_BREAKDOWN",
+      "eventType": "OK"
     },
-    "IN_STANDBY"
-  ],
-  [
-    {
-      "state": "IN_BREAKDOWN",
-      "event": "POWER_ON"
+    "nextStateType": "IN_STANDBY"
+  },
+  {
+    "trigger": {
+      "stateType": "IN_BREAKDOWN",
+      "eventType": "POWER_ON"
     },
-    "IN_STANDBY"
-  ],
-  [
-    {
-      "state": "IN_BREAKDOWN",
-      "event": "START_PROCESS"
+    "nextStateType": "IN_STANDBY"
+  },
+  {
+    "trigger": {
+      "stateType": "IN_BREAKDOWN",
+      "eventType": "START_PROCESS"
     },
-    "DOING_PROCESS"
-  ],
-  [
-    {
-      "state": "IN_BREAKDOWN",
-      "event": "POWER_OFF"
+    "nextStateType": "DOING_PROCESS"
+  },
+  {
+    "trigger": {
+      "stateType": "IN_BREAKDOWN",
+      "eventType": "POWER_OFF"
     },
-    "OFF"
-  ],
-  [
-    {
-      "state": "IN_STANDBY",
-      "event": "START_PROCESS"
+    "nextStateType": "OFF"
+  },
+  {
+    "trigger": {
+      "stateType": "IN_STANDBY",
+      "eventType": "START_PROCESS"
     },
-    "DOING_PROCESS"
-  ],
-  [
-    {
-      "state": "IN_STANDBY",
-      "event": "ERROR"
+    "nextStateType": "DOING_PROCESS"
+  },
+  {
+    "trigger": {
+      "stateType": "IN_STANDBY",
+      "eventType": "ERROR"
     },
-    "IN_BREAKDOWN"
-  ],
-  [
-    {
-      "state": "IN_STANDBY",
-      "event": "RESETTING"
+    "nextStateType": "IN_BREAKDOWN"
+  },
+  {
+    "trigger": {
+      "stateType": "IN_STANDBY",
+      "eventType": "RESETTING"
     },
-    "IN_BREAKDOWN"
-  ],
-  [
-    {
-      "state": "IN_STANDBY",
-      "event": "POWER_OFF"
+    "nextStateType": "IN_BREAKDOWN"
+  },
+  {
+    "trigger": {
+      "stateType": "IN_STANDBY",
+      "eventType": "POWER_OFF"
     },
-    "OFF"
-  ],
-  [
-    {
-      "state": "DOING_PROCESS",
-      "event": "ERROR"
+    "nextStateType": "OFF"
+  },
+  {
+    "trigger": {
+      "stateType": "DOING_PROCESS",
+      "eventType": "ERROR"
     },
-    "IN_BREAKDOWN"
-  ],
-  [
-    {
-      "state": "DOING_PROCESS",
-      "event": "RESETTING"
+    "nextStateType": "IN_BREAKDOWN"
+  },
+  {
+    "trigger": {
+      "stateType": "DOING_PROCESS",
+      "eventType": "RESETTING"
     },
-    "IN_BREAKDOWN"
-  ],
-  [
-    {
-      "state": "DOING_PROCESS",
-      "event": "POWER_OFF"
+    "nextStateType": "IN_BREAKDOWN"
+  },
+  {
+    "trigger": {
+      "stateType": "DOING_PROCESS",
+      "eventType": "POWER_OFF"
     },
-    "OFF"
-  ],
-  [
-    {
-      "state": "DOING_PROCESS",
-      "event": "END_PROCESS"
+    "nextStateType": "OFF"
+  },
+  {
+    "trigger": {
+      "stateType": "DOING_PROCESS",
+      "eventType": "END_PROCESS"
     },
-    "IN_STANDBY"
-  ],
-  [
-    {
-      "state": "DOING_PROCESS",
-      "event": "START_PROCESS"
+    "nextStateType": "IN_STANDBY"
+  },
+  {
+    "trigger": {
+      "stateType": "DOING_PROCESS",
+      "eventType": "START_PROCESS"
     },
-    "DOING_PROCESS"
-  ]
+    "nextStateType": "DOING_PROCESS"
+  }
 ]

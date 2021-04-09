@@ -12,9 +12,11 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.util.Pair;
 
-import java.time.Duration;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
 @Document(collection = "states")
 @AllArgsConstructor
@@ -28,7 +30,7 @@ public class TwinState implements Comparable<TwinState> {
   @Field("twinStateId")
   @NonNull
   @Getter
-  private final TwinStateId twinStateId;
+  private final TwinStateType type;
 
   @Field("twinName")
   @NonNull
@@ -41,42 +43,50 @@ public class TwinState implements Comparable<TwinState> {
   @Field("lastEventEvaluated")
   private Event lastEventEvaluated;
 
-  public static TwinState of(TwinStateId twinStateId, String twinName) {
-    return new TwinState(new ObjectId().toString(), twinStateId, twinName, null, null);
+  public static TwinState of(TwinStateType twinStateType, String twinName) {
+    return new TwinState(new ObjectId().toString(), twinStateType, twinName, null, null);
   }
 
-  public static TwinState of(TwinStateId twinStateId, String twinName, Event enterEvent) {
-    return new TwinState(new ObjectId().toString(), twinStateId, twinName, enterEvent, enterEvent);
+  public static TwinState of(TwinStateType twinStateType, String twinName, Event enterEvent) {
+    return new TwinState(new ObjectId().toString(), twinStateType, twinName, enterEvent, enterEvent);
   }
 
   public Collection<Event> getSubsequentEvents(EventsService eventsService) {
-    if (lastEventEvaluated != null) {
-      return eventsService.getSubsequentEvents(twinName, lastEventEvaluated.getTimestamp());
+    if (eventsService != null) {
+      if (lastEventEvaluated != null) {
+        return lastEventEvaluated.getSubsequentEvents(twinName, eventsService);
+      }
+
+      return eventsService.getEvents(twinName);
     }
 
-    return eventsService.getEvents(twinName);
+    return Collections.emptyList();
   }
 
-  public boolean eventsHaveSameParams() {
+  public boolean eventParamsMatch() {
     return ((enterEvent != null) &&
-            enterEvent.hasSameParams(lastEventEvaluated));
+            enterEvent.paramsMatchWith(lastEventEvaluated));
   }
 
-  public void updateLastEventEvaluated(Event event) {
+  public Optional<Pair<TwinStateType, EventType>> createTransitionTriggerFor(Event event) {
     if (event != null) {
-      this.lastEventEvaluated = event;
+      lastEventEvaluated = event;
+      return lastEventEvaluated.createTransitionTriggerFor(type);
     }
+
+    return Optional.empty();
   }
 
   public long durationSeconds() {
-    if ((enterEvent != null) && (lastEventEvaluated != null)) {
-      return (Duration.between(enterEvent.getTimestamp(), lastEventEvaluated.getTimestamp()).getSeconds());
+    if (enterEvent != null) {
+      return enterEvent.secondsUntil(lastEventEvaluated);
     }
+
     return 0;
   }
 
-  public boolean stateIdIs(TwinStateId twinStateId) {
-    return this.twinStateId.equals(twinStateId);
+  public boolean typeIs(TwinStateType twinStateType) {
+    return this.type.equals(twinStateType);
   }
 
   public boolean lastEventTypeIs(EventType eventType) {
@@ -84,8 +94,8 @@ public class TwinState implements Comparable<TwinState> {
             && (lastEventEvaluated.typeIs(eventType)));
   }
 
-  public boolean stateIsDoing(ProcessName processName) {
-    return (stateIdIs(TwinStateId.DOING_PROCESS)
+  public boolean starts(ProcessName processName) {
+    return (typeIs(TwinStateType.DOING_PROCESS)
             && (enterEvent != null)
             && (enterEvent.processIs(processName)));
   }

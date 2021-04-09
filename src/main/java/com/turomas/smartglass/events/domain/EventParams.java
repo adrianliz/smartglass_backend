@@ -7,9 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class EventParams {
   @EqualsAndHashCode.Include

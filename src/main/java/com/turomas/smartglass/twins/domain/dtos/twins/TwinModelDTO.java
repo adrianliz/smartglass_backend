@@ -1,6 +1,6 @@
 package com.turomas.smartglass.twins.domain.dtos.twins;
 
-import com.turomas.smartglass.twins.domain.statesmachine.TwinStateId;
+import com.turomas.smartglass.twins.domain.statesmachine.TwinStateType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,5 +10,5 @@ public class TwinModelDTO {
   private final String twinName;
   private final String machineSeries;
   private final String machineModel;
-  private final TwinStateId currentState;
+  private final TwinStateType currentState;
 }
