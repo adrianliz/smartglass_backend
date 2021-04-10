@@ -13,7 +13,7 @@
     <artifactId>smartglass</artifactId>
     <version>0.6.0</version>
     <name>smartglass</name>
-    <description>API de smartglass</description>
+    <description>Smartglass backend</description>
 
     <properties>
         <java.version>11</java.version>
