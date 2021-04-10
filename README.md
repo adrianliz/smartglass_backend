@@ -1,5 +1,5 @@
 # 🤖 Smartglass Backend
-[![CI pipeline status](https://github.com/adrianliz/smartglass-backend/workflows/CI/badge.svg)](https://github.com/adrianliz/smartglass-backend/actions)
+[![CI pipeline status](https://github.com/adrianliz/smartglass_backend/workflows/CI/badge.svg)](https://github.com/adrianliz/smartglass_backend/actions)
 
 ## ℹ️Introducción
 
