@@ -2,76 +2,66 @@ package com.turomas.smartglass.twins.domain.statesmachine;
 
 import com.turomas.smartglass.events.domain.Event;
 import com.turomas.smartglass.events.domain.EventType;
-import com.turomas.smartglass.twins.domain.statesmachine.guards.EndProcessMatcher;
-import com.turomas.smartglass.twins.domain.statesmachine.inconsistencies.UpdatePreviousEvent;
+import com.turomas.smartglass.events.services.EventsService;
+import com.turomas.smartglass.twins.domain.exceptions.InvalidInitialState;
+import com.turomas.smartglass.twins.domain.statesmachine.guards.GuardStrategy;
+import com.turomas.smartglass.twins.domain.statesmachine.guards.ParamsMatcher;
+import lombok.NonNull;
+import org.springframework.data.util.Pair;
 
 import java.util.*;
 
 public class StatesMachine {
+  @NonNull
   private TwinState currentState;
-  private final Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> transitions;
-  private final Map<TransitionTrigger<TwinStateId, TwinStateId>, GuardStrategy> guards;
-  private final Map<TransitionTrigger<TwinStateId, EventType>, InconsistencyStrategy> inconsistencies;
+  @NonNull
+  private final String twinName;
+  private final Map<Pair<TwinStateType, EventType>, TwinStateType> transitions;
+  @NonNull
+  private final Map<Pair<TwinStateType, TwinStateType>, GuardStrategy> guards;
 
-  public StatesMachine(TwinState initialState,
-                       Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> transitions) {
+  public StatesMachine(TwinState initialState, Map<Pair<TwinStateType, EventType>, TwinStateType> transitions)
+    throws InvalidInitialState {
+
+    if (initialState == null) throw new InvalidInitialState();
+
+    this.twinName = initialState.getTwinName();
     this.currentState = initialState;
     this.transitions = transitions;
 
     guards = new HashMap<>();
-    guards.put(new TransitionTrigger<>(TwinStateId.DOING_PROCESS, TwinStateId.IN_STANDBY),
-               new EndProcessMatcher());
-
-    inconsistencies = new HashMap<>();
-    inconsistencies.put(
-      new TransitionTrigger<>(TwinStateId.DOING_PROCESS, EventType.START_PROCESS),
-      new UpdatePreviousEvent());
-  }
-
-  private void executeTransition(TwinStateId newStateId, Collection<TwinState> transitedStates) {
-    currentState =
-      new TwinState(newStateId, currentState.getTwinName(), getLastEventEvaluated());
-    transitedStates.add(currentState);
+    guards.put(Pair.of(TwinStateType.DOING_PROCESS, TwinStateType.IN_STANDBY), new ParamsMatcher());
   }
 
   private void processEvent(Event event, Collection<TwinState> transitedStates) {
-    if (event != null) {
-      currentState.updateLastEventEvaluated(event);
+    currentState.createTransitionTriggerFor(event).ifPresent(transitionTrigger -> {
+      TwinStateType newStateType = transitions.get(transitionTrigger);
 
-      TwinStateId newStateId =
-        transitions.get(new TransitionTrigger<>(currentState.getTwinStateId(), event.getType()));
-      GuardStrategy guard = guards.get(new TransitionTrigger<>(currentState.getTwinStateId(), newStateId));
-      InconsistencyStrategy inconsistency =
-        inconsistencies.get(new TransitionTrigger<>(currentState.getTwinStateId(), event.getType()));
+      if (newStateType != null) {
+        GuardStrategy guard = guards.get(Pair.of(getCurrentStateType(), newStateType));
 
-      if (inconsistency != null) {
-        inconsistency.fixInconsistency(currentState.getEnterEvent(), event);
-      } else if (guard != null) {
-        if (! guard.cutTransition(currentState.getEnterEvent(), event)) {
-          executeTransition(newStateId, transitedStates);
+        if ((guard == null) || (! guard.cutTransition(currentState))) {
+          currentState = TwinState.of(newStateType, twinName, event);
+          transitedStates.add(currentState);
         }
-      } else if (newStateId != null) {
-        executeTransition(newStateId, transitedStates);
       }
-    }
+    });
   }
 
-  public Collection<TwinState> processEvents(Collection<Event> events) {
+  public Collection<TwinState> processEvents(EventsService eventsService) {
     SortedSet<TwinState> transitedStates = new TreeSet<>();
     transitedStates.add(currentState);
 
-    for (Event event : events) {
-      processEvent(event, transitedStates);
+    if (transitions != null) {
+      for (Event event : currentState.getSubsequentEvents(eventsService)) {
+        processEvent(event, transitedStates);
+      }
     }
 
     return transitedStates;
   }
 
-  public Event getLastEventEvaluated() {
-    return currentState.getLastEventEvaluated();
-  }
-
-  public TwinStateId getCurrentState() {
-    return currentState.getTwinStateId();
+  public TwinStateType getCurrentStateType() {
+    return currentState.getType();
   }
 }

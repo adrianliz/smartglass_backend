@@ -1,25 +1,25 @@
 package com.turomas.smartglass.twins.domain;
 
+import com.turomas.smartglass.events.domain.CutResultDTO;
 import com.turomas.smartglass.events.domain.Event;
-import com.turomas.smartglass.events.domain.EventType;
 import com.turomas.smartglass.events.domain.ProcessName;
 import com.turomas.smartglass.events.services.EventsService;
 import com.turomas.smartglass.twins.domain.dtos.statistics.ErrorDTO;
 import com.turomas.smartglass.twins.domain.dtos.statistics.MaterialDTO;
 import com.turomas.smartglass.twins.domain.dtos.statistics.OptimizationDTO;
 import com.turomas.smartglass.twins.domain.dtos.statistics.ToolsDTO;
-import org.springframework.data.util.Pair;
+import lombok.NonNull;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
 
 public class EventsStatistics {
+  @NonNull
   private final String twinName;
+  @NonNull
   private final EventsService eventsService;
 
   public EventsStatistics(String twinName, EventsService eventsService) {
@@ -27,78 +27,72 @@ public class EventsStatistics {
     this.eventsService = eventsService;
   }
 
-  private Stream<Event> filterEvents(Collection<Event> events, Predicate<Event> condition) {
-    return events.stream().filter(condition);
-  }
-
-  private <K> Map<K, Long> groupAndCount(Stream<Event> events, Function<Event, K> classifier) {
-    return events.collect(groupingBy(classifier, Collectors.counting()));
-  }
-
-  private Optional<Event> getLastEvent(Stream<Event> events) {
-    return events.reduce((first, last) -> last);
-  }
-
-  private boolean eventFinalizesProcess(Event event, ProcessName processName) {
-    return event.finalizesProcess(processName);
-  }
-
-  private boolean materialWasCut(Event event) {
-    return (eventFinalizesProcess(event, ProcessName.CUT) && (event.getParams().getMaterial() != null));
+  private Stream<CutResultDTO> getCutResults(Collection<Event> events) {
+    return events.stream().map(Event::getCutResult).flatMap(Optional::stream);
   }
 
   public Collection<MaterialDTO> calculateMaterialsUsage(DateRange dateRange) {
-    Collection<Event> events =
-      eventsService.getEventsBetween(twinName, dateRange.getStartDate(), dateRange.getEndDate());
     SortedSet<MaterialDTO> materialsUsed = new TreeSet<>(Collections.reverseOrder());
 
-    Stream<Event> filteredEvents = filterEvents(events, this::materialWasCut);
-    groupAndCount(filteredEvents, event -> event.getParams().getMaterial())
-      .forEach((name, timesUsed) -> materialsUsed.add(new MaterialDTO(name, timesUsed)));
+    if (dateRange != null) {
+      Collection<Event> events = dateRange.getEventsInside(twinName, eventsService);
+
+      getCutResults(events)
+        .collect(groupingBy(CutResultDTO::getMaterial, Collectors.counting()))
+        .forEach((name, timesUsed) -> materialsUsed.add(new MaterialDTO(name, timesUsed)));
+    }
 
     return materialsUsed;
   }
 
   public Collection<OptimizationDTO> calculateOptimizationsProcessed(DateRange dateRange) {
-    Collection<Event> events =
-      eventsService.getEventsBetween(twinName, dateRange.getStartDate(), dateRange.getEndDate());
     SortedSet<OptimizationDTO> optimizationsProcessed = new TreeSet<>(Collections.reverseOrder());
 
-    Stream<Event> filteredEvents = filterEvents(events, this::materialWasCut);
-    groupAndCount(filteredEvents,
-                  event -> Pair.of(event.getParams().getOptimizationName(), event.getParams().getMaterial()))
-      .forEach((key, piecesProcessed) -> optimizationsProcessed
-        .add(new OptimizationDTO(key.getFirst(), key.getSecond(), piecesProcessed)));
+    if (dateRange != null) {
+      Collection<Event> events = dateRange.getEventsInside(twinName, eventsService);
+
+      getCutResults(events)
+        .collect(groupingBy(cutResult -> cutResult, Collectors.counting()))
+        .forEach((cutResult, piecesProcessed) ->
+                   optimizationsProcessed.add(new OptimizationDTO(cutResult.getOptimization(), cutResult.getMaterial(),
+                                                                  piecesProcessed)));
+    }
 
     return optimizationsProcessed;
   }
 
   public ToolsDTO calculateToolsInfo(DateRange dateRange) {
-    Collection<Event> events =
-      eventsService.getEventsBetween(twinName, dateRange.getStartDate(), dateRange.getEndDate());
     ToolsDTO toolsInfo = new ToolsDTO();
 
-    Stream<Event> filteredEvents = filterEvents(events, event -> eventFinalizesProcess(event, ProcessName.CUT));
-    getLastEvent(filteredEvents).ifPresent(
-      event -> {
-        toolsInfo.setToolDistanceCovered(event.getParams().getDistanceCovered());
-        toolsInfo.setToolAngle(event.getParams().getToolAngle());
-      });
+    if (dateRange != null) {
+      Collection<Event> events = dateRange.getEventsInside(twinName, eventsService);
 
-    filteredEvents = filterEvents(events, event -> eventFinalizesProcess(event, ProcessName.LOWE));
-    getLastEvent(filteredEvents).ifPresent(event -> toolsInfo.setWheelDiameter(event.getParams().getWheelDiameter()));
+      events.stream().map(event -> event.getToolsInfoAfter(ProcessName.CUT))
+            .flatMap(Optional::stream).reduce((first, last) -> last)
+            .ifPresent(
+              toolsDTO -> {
+                toolsInfo.setToolDistanceCovered(toolsDTO.getToolDistanceCovered());
+                toolsInfo.setToolAngle(toolsDTO.getToolAngle());
+              });
+
+      events.stream().map(event -> event.getToolsInfoAfter(ProcessName.LOWE))
+            .flatMap(Optional::stream).reduce((first, last) -> last)
+            .ifPresent(toolsDTO -> toolsInfo.setWheelDiameter(toolsDTO.getWheelDiameter()));
+    }
 
     return toolsInfo;
   }
 
   public Collection<ErrorDTO> calculateErrorsProduced(DateRange dateRange) {
-    Collection<Event> events =
-      eventsService.getEventsBetween(twinName, dateRange.getStartDate(), dateRange.getEndDate());
     SortedSet<ErrorDTO> errorsProduced = new TreeSet<>(Collections.reverseOrder());
 
-    Stream<Event> filteredEvents = filterEvents(events, event -> event.typeIs(EventType.ERROR));
-    groupAndCount(filteredEvents, Event::getErrorName)
-      .forEach((cause, timesOccurred) -> errorsProduced.add(new ErrorDTO(cause, timesOccurred)));
+    if (dateRange != null) {
+      Collection<Event> events = dateRange.getEventsInside(twinName, eventsService);
+
+      events.stream().filter(event -> (event.getErrorName() != null))
+            .collect(groupingBy(Event::getErrorName, Collectors.counting()))
+            .forEach((cause, timesOccurred) -> errorsProduced.add(new ErrorDTO(cause, timesOccurred)));
+    }
 
     return errorsProduced;
   }

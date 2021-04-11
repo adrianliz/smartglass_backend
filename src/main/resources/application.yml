@@ -1,7 +1,10 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://adrian:turoMas%24@155.210.68.101:27017/turomas?serverSelectionTimeoutMS=5000&connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-256
+      uri: ${env.MONGO_URI}
+
+transitions:
+  file: ${env.TRANSITIONS_FILE}
 
 states:
-  updateDelay: 5000
+  updateDelay: ${env.STATES_UPDATE_DELAY}

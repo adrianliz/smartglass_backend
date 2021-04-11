@@ -1,64 +1,34 @@
 package com.turomas.smartglass.twins.domain;
 
-import com.turomas.smartglass.events.domain.Event;
-import com.turomas.smartglass.events.domain.EventType;
 import com.turomas.smartglass.events.services.EventsService;
 import com.turomas.smartglass.twins.domain.dtos.statistics.*;
 import com.turomas.smartglass.twins.domain.statesmachine.StatesMachine;
-import com.turomas.smartglass.twins.domain.statesmachine.TransitionTrigger;
 import com.turomas.smartglass.twins.domain.statesmachine.TwinState;
-import com.turomas.smartglass.twins.domain.statesmachine.TwinStateId;
-import com.turomas.smartglass.twins.services.StatesService;
+import com.turomas.smartglass.twins.domain.statesmachine.TwinStateType;
+import lombok.NonNull;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeSet;
 
 public class Twin {
-  private final String name;
+  @NonNull
+  private final StatesMachine statesMachine;
+  @NonNull
   private final StatesStatistics statesStatistics;
+  @NonNull
   private final EventsStatistics eventsStatistics;
-  private StatesMachine statesMachine;
 
-  public Twin(String name, StatesService statesService, EventsService eventsService,
-              Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> transitions) {
-    this.name = name;
-    statesStatistics = new StatesStatistics(name, statesService);
-    eventsStatistics = new EventsStatistics(name, eventsService);
-
-    createStatesMachine(transitions, statesService);
-  }
-
-  private void createStatesMachine(Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> transitions,
-                                   StatesService statesService) {
-    Optional<TwinState> initialState = statesService.getLastState(name);
-    statesMachine =
-      new StatesMachine(initialState.orElse(new TwinState(TwinStateId.OFF, name)), transitions);
-  }
-
-  private Collection<Event> getNewEvents(EventsService eventsService) {
-    Event lastEventEvaluated = statesMachine.getLastEventEvaluated();
-    if (lastEventEvaluated != null) {
-      return eventsService.getSubsequentEvents(name, lastEventEvaluated.getTimestamp());
-    }
-
-    return eventsService.getEvents(name);
+  public Twin(StatesMachine statesMachine, StatesStatistics statesStatistics, EventsStatistics eventsStatistics) {
+    this.statesStatistics = statesStatistics;
+    this.eventsStatistics = eventsStatistics;
+    this.statesMachine = statesMachine;
   }
 
   public Collection<TwinState> processEvents(EventsService eventsService) {
-    Collection<Event> eventsToProcess = getNewEvents(eventsService);
-    Collection<TwinState> transitedStates = new TreeSet<>();
-
-    if (! eventsToProcess.isEmpty()) {
-      transitedStates = statesMachine.processEvents(eventsToProcess);
-    }
-
-    return transitedStates;
+    return statesMachine.processEvents(eventsService);
   }
 
-  public TwinStateId getCurrentState() {
-    return statesMachine.getCurrentState();
+  public TwinStateType getCurrentState() {
+    return statesMachine.getCurrentStateType();
   }
 
   public Collection<RatioDTO> getRatios(DateRange dateRange) {

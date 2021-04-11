@@ -1,25 +1,15 @@
 package com.turomas.smartglass.twins.repositories;
 
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
-import com.turomas.smartglass.events.domain.EventType;
 import com.turomas.smartglass.events.services.EventsService;
+import com.turomas.smartglass.twins.domain.EventsStatistics;
+import com.turomas.smartglass.twins.domain.StatesStatistics;
 import com.turomas.smartglass.twins.domain.Twin;
 import com.turomas.smartglass.twins.domain.dtos.twins.TwinModelDTO;
-import com.turomas.smartglass.twins.domain.statesmachine.TransitionTrigger;
-import com.turomas.smartglass.twins.domain.statesmachine.TwinStateId;
+import com.turomas.smartglass.twins.domain.factories.StatesMachineFactory;
 import com.turomas.smartglass.twins.repositories.exceptions.TwinNotFound;
 import com.turomas.smartglass.twins.services.StatesService;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.lang.reflect.Type;
 import java.util.*;
 
 // TODO replace with ontology model
@@ -28,24 +18,14 @@ public class OWLRepository implements TwinsRepository {
   private final Map<String, Twin> twins;
 
   public OWLRepository(StatesService statesService, EventsService eventsService,
-                       @Value("classpath:transitions.json") Resource resourceFile)
-    throws IOException, JsonIOException, JsonSyntaxException {
+                       StatesMachineFactory statesMachineFactory) {
 
-    Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> transitions =
-      loadTransitions(new FileReader(resourceFile.getFile()));
-
+    // TODO replace with query that retrieves twins from OWL graph database
     twins = new HashMap<>();
-    twins.put("Turomas1", new Twin("Turomas1", statesService, eventsService, transitions));
-  }
-
-  private Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId> loadTransitions(Reader file)
-    throws JsonIOException, JsonSyntaxException {
-
-    Type type =
-      new TypeToken<Map<TransitionTrigger<TwinStateId, EventType>, TwinStateId>>() {
-      }.getType();
-
-    return new GsonBuilder().enableComplexMapKeySerialization().create().fromJson(file, type);
+    String twinName = "Turomas1";
+    twins.put(twinName, new Twin(statesMachineFactory.createFor(twinName),
+                                 new StatesStatistics(twinName, statesService),
+                                 new EventsStatistics(twinName, eventsService)));
   }
 
   @Override
