@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public class StatesStatisticsShouldTest {
@@ -112,16 +113,16 @@ public class StatesStatisticsShouldTest {
   @MethodSource("testRatios")
   void haveRatios(Collection<RatioDTO> expectedRatios, Collection<TwinState> mockTransitedStates) {
     Collection<RatioDTO> ratios =
-      StatesStatisticsMother.create(statesService, mockTransitedStates).calculateRatios(DateRangeMother.random());
+      StatisticsMother.of(statesService, mockTransitedStates).calculateRatios(DateRangeMother.random());
 
-    assertEquals(ratios, expectedRatios);
+    assertTrue(ratios.containsAll(expectedRatios));
   }
 
   @ParameterizedTest
   @MethodSource("testMachineUsage")
   void haveMachineUsage(MachineUsageDTO expectedMachineUsage, Collection<TwinState> mockTransitedStates) {
     MachineUsageDTO machineUsage =
-      StatesStatisticsMother.create(statesService, mockTransitedStates).calculateMachineUsage(DateRangeMother.random());
+      StatisticsMother.of(statesService, mockTransitedStates).calculateMachineUsage(DateRangeMother.random());
 
     assertEquals(machineUsage, expectedMachineUsage);
   }
@@ -130,7 +131,7 @@ public class StatesStatisticsShouldTest {
   @MethodSource("testTimeDistribution")
   void haveTimeDistribution(TimeDistributionDTO expectedTimeDistribution, Collection<TwinState> mockTransitedStates) {
     TimeDistributionDTO timeDistribution =
-      StatesStatisticsMother.create(statesService, mockTransitedStates).calculateTimeDistribution(
+      StatisticsMother.of(statesService, mockTransitedStates).calculateTimeDistribution(
         DateRangeMother.random());
 
     assertEquals(timeDistribution, expectedTimeDistribution);

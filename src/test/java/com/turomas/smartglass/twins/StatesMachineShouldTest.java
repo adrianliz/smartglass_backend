@@ -32,7 +32,7 @@ public class StatesMachineShouldTest {
       // Should do transition from OFF to IN_STANDBY when POWER_ON
       Arguments.of(
         TwinStateType.IN_STANDBY,
-        EventsMother.of(EventType.POWER_ON),
+        EventsMother.initial(EventType.POWER_ON),
         StatesMachinesMother.create(
           StatesMother.initial(TwinStateType.OFF),
           TransitionsMother.createOneTransition(Pair.of(TwinStateType.OFF, EventType.POWER_ON),
@@ -52,13 +52,14 @@ public class StatesMachineShouldTest {
         TwinStateType.DOING_PROCESS,
         EventsMother.of(EventType.END_PROCESS, ProcessName.LOAD_GLASS),
         StatesMachinesMother.create(StatesMother.doingProcess(ProcessName.CUT),
-          TransitionsMother.createOneTransition(Pair.of(TwinStateType.DOING_PROCESS, EventType.END_PROCESS),
-                                                TwinStateType.IN_STANDBY))),
+                                    TransitionsMother
+                                      .createOneTransition(Pair.of(TwinStateType.DOING_PROCESS, EventType.END_PROCESS),
+                                                           TwinStateType.IN_STANDBY))),
 
       // Shouldn't do transition when states machine don't have transitions defined
       Arguments.of(
         TwinStateType.OFF,
-        EventsMother.of(EventType.POWER_ON),
+        EventsMother.initial(EventType.POWER_ON),
         StatesMachinesMother.create(StatesMother.initial(TwinStateType.OFF), null)));
   }
 

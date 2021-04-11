@@ -32,8 +32,6 @@ También, se podrán generar distintas estadísticas derivadas de los resultados
   a Docker Hub en cada PUSH o PULL_REQUEST en la rama main
 
 - 📋 Makefile:
-  - Ejecutar `make build` para crear el artefacto maven
-  - Ejecutar `make build` para ejecutar los tests unitarios
   - Ejecutar `make docker-up-remote` para crear un contenedor en la máquina 155.210.68.101 con la última imagen disponible
     en Docker Hub
   - Ejecutar `make docker-down-remote` para parar dicho contenedor 

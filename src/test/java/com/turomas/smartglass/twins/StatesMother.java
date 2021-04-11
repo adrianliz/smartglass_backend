@@ -21,8 +21,8 @@ public class StatesMother {
   }
 
   public static TwinState doingProcess(ProcessName processName, long secondsInState) {
-    Event enterEvent = EventsMother.of(processName, START_DATE);
-    Event lastEventEvaluated = EventsMother.of(processName, START_DATE.plusSeconds(secondsInState));
+    Event enterEvent = EventsMother.startsProcess(processName, START_DATE);
+    Event lastEventEvaluated = EventsMother.startsProcess(processName, START_DATE.plusSeconds(secondsInState));
 
     return of(TwinStateType.DOING_PROCESS, enterEvent, lastEventEvaluated);
   }

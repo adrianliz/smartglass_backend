@@ -1,15 +1,16 @@
 package com.turomas.smartglass.events.domain;
 
 import com.mongodb.lang.NonNull;
+import com.turomas.smartglass.twins.domain.dtos.statistics.ToolsDTO;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.Optional;
+
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class EventParams {
   @EqualsAndHashCode.Include
@@ -41,5 +42,23 @@ public class EventParams {
 
   public boolean processIs(ProcessName processName) {
     return this.processName.equals(processName);
+  }
+
+  public Optional<CutResultDTO> getCutResult() {
+    if (processIs(ProcessName.CUT)) {
+      if (material != null) {
+        return Optional.of(new CutResultDTO(optimizationName, material));
+      }
+    }
+
+    return Optional.empty();
+  }
+
+  public Optional<ToolsDTO> getToolsInfo(ProcessName processName) {
+    if (processIs(processName)) {
+      return Optional.of(new ToolsDTO(distanceCovered, toolAngle, wheelDiameter));
+    }
+
+    return Optional.empty();
   }
 }
