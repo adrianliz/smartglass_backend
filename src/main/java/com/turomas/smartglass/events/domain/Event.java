@@ -65,7 +65,7 @@ public class Event implements Comparable<Event> {
 
   public Optional<ToolsDTO> getToolsInfoAfter(ProcessName processName) {
     if (typeIs(EventType.END_PROCESS) && (params != null)) {
-      return params.getToolsInfo(processName);
+      return params.getToolsInfoIf(processName);
     }
 
     return Optional.empty();

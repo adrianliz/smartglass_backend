@@ -32,7 +32,7 @@ public class EventParams {
   private String material;
 
   @Field("tool_total_distance_covered")
-  private long distanceCovered; // 0.1mm
+  private long toolDistanceCovered; // 0.1mm
 
   @Field("tool_angle")
   private int toolAngle; // mm
@@ -54,9 +54,9 @@ public class EventParams {
     return Optional.empty();
   }
 
-  public Optional<ToolsDTO> getToolsInfo(ProcessName processName) {
+  public Optional<ToolsDTO> getToolsInfoIf(ProcessName processName) {
     if (processIs(processName)) {
-      return Optional.of(new ToolsDTO(distanceCovered, toolAngle, wheelDiameter));
+      return Optional.of(new ToolsDTO(toolDistanceCovered, toolAngle, wheelDiameter));
     }
 
     return Optional.empty();

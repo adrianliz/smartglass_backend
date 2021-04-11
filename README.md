@@ -25,6 +25,16 @@ También, se podrán generar distintas estadísticas derivadas de los resultados
 - :white_check_mark: v0.6.0 → BREAKING CHANGE: Simplificación del cálculo de las estadísticas asociadas a los estados
   de cada gemelo, persistiendo los estados por los que estos transitan y consultándolos cuando es necesario, en vez de
   mantener en memoria dichos estados y volver a calcularlos en cada reinicio del servidor
+- :white_check_mark: v0.7.0 → Tests unitarios y añadido soporte para CI (integración continua)
+
+## 📁 Variables de entorno
+
+Se DEBE crear un fichero .env en la carpeta `resources` que contenga las variables de entorno:
+  - MONGO_URI = URI de la conexión a la base de datos de Mongo
+  - TRANSITIONS_FILE = Ruta absoluta al fichero .json que define las transiciones
+  - STATES_UPDATE_DELAY = Delay en ms para actualizar los estados por los que ha transitado cada gemelo
+
+A modo de ejemplo se incluye un fichero .env.example en la carpeta `resources`
 
 ## 🏁 Integración continua
 
