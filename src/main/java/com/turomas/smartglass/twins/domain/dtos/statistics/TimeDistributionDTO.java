@@ -1,18 +1,20 @@
 package com.turomas.smartglass.twins.domain.dtos.statistics;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-@Getter
-public class TimeDistributionDTO {
-  static final int SECONDS_TO_HOURS_FACTOR = 3600;
+import static com.turomas.smartglass.twins.domain.dtos.statistics.ToHoursUtil.transformToHours;
 
+@Getter
+@EqualsAndHashCode
+public class TimeDistributionDTO {
   private final long processingGlassHours;
   private final long loadingGlassHours;
   private final long standbyHours;
 
   public TimeDistributionDTO(long processingGlassSeconds, long loadingGlassSeconds, long standbySeconds) {
-    processingGlassHours = processingGlassSeconds / SECONDS_TO_HOURS_FACTOR;
-    loadingGlassHours = loadingGlassSeconds / SECONDS_TO_HOURS_FACTOR;
-    standbyHours = standbySeconds / SECONDS_TO_HOURS_FACTOR;
+    processingGlassHours = transformToHours(processingGlassSeconds);
+    loadingGlassHours = transformToHours(loadingGlassSeconds);
+    standbyHours = transformToHours(standbySeconds);
   }
 }

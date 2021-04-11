@@ -9,6 +9,7 @@ import com.turomas.smartglass.twins.domain.statesmachine.StatesMachine;
 import com.turomas.smartglass.twins.domain.statesmachine.TwinState;
 import com.turomas.smartglass.twins.domain.statesmachine.TwinStateType;
 import com.turomas.smartglass.twins.services.StatesService;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.data.util.Pair;
@@ -23,7 +24,9 @@ import java.util.Optional;
 
 @Component
 public class StatesMachineJSONFactory implements StatesMachineFactory {
+  @NonNull
   private final StatesService statesService;
+  @NonNull
   private final Map<Pair<TwinStateType, EventType>, TwinStateType> statesMachineTransitions;
 
   public StatesMachineJSONFactory(StatesService statesService, @Value("${transitions.file}") Resource resource)

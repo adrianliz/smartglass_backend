@@ -6,14 +6,18 @@ import com.turomas.smartglass.events.services.EventsService;
 import com.turomas.smartglass.twins.domain.exceptions.InvalidInitialState;
 import com.turomas.smartglass.twins.domain.statesmachine.guards.GuardStrategy;
 import com.turomas.smartglass.twins.domain.statesmachine.guards.ParamsMatcher;
+import lombok.NonNull;
 import org.springframework.data.util.Pair;
 
 import java.util.*;
 
 public class StatesMachine {
+  @NonNull
   private TwinState currentState;
+  @NonNull
   private final String twinName;
   private final Map<Pair<TwinStateType, EventType>, TwinStateType> transitions;
+  @NonNull
   private final Map<Pair<TwinStateType, TwinStateType>, GuardStrategy> guards;
 
   public StatesMachine(TwinState initialState, Map<Pair<TwinStateType, EventType>, TwinStateType> transitions)

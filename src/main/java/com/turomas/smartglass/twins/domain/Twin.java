@@ -5,12 +5,16 @@ import com.turomas.smartglass.twins.domain.dtos.statistics.*;
 import com.turomas.smartglass.twins.domain.statesmachine.StatesMachine;
 import com.turomas.smartglass.twins.domain.statesmachine.TwinState;
 import com.turomas.smartglass.twins.domain.statesmachine.TwinStateType;
+import lombok.NonNull;
 
 import java.util.Collection;
 
 public class Twin {
+  @NonNull
   private final StatesMachine statesMachine;
+  @NonNull
   private final StatesStatistics statesStatistics;
+  @NonNull
   private final EventsStatistics eventsStatistics;
 
   public Twin(StatesMachine statesMachine, StatesStatistics statesStatistics, EventsStatistics eventsStatistics) {

@@ -3,12 +3,14 @@ package com.turomas.smartglass.twins.domain.dtos.statistics;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 
 @Getter
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class MaterialDTO implements Comparable<MaterialDTO> {
   @EqualsAndHashCode.Include
+  @NonNull
   private final String name;
   private final long timesUsed;
 

@@ -2,6 +2,7 @@ package com.turomas.smartglass.twins.services;
 
 import com.turomas.smartglass.twins.domain.statesmachine.TwinState;
 import com.turomas.smartglass.twins.repositories.StatesRepository;
+import lombok.NonNull;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.Optional;
 
 @Service
 public class StatesProxy implements StatesService {
+  @NonNull
   private final StatesRepository statesRepository;
 
   public StatesProxy(StatesRepository statesRepository) {

@@ -4,6 +4,6 @@ import com.turomas.smartglass.twins.domain.statesmachine.TwinState;
 
 public class ParamsMatcher implements GuardStrategy {
   public boolean cutTransition(TwinState currentState) {
-    return ((currentState == null) || (! currentState.eventParamsMatch()));
+    return ((currentState == null) || (! currentState.eventsParamsMatch()));
   }
 }

@@ -1,9 +1,3 @@
-build:
-	@./mvnw clean package
-
-test:
-	@./mvnw test
-
 docker-build-local:
 	@docker build . --tag smartglass-backend:dev
 

@@ -4,12 +4,14 @@ import com.turomas.smartglass.twins.domain.Twin;
 import com.turomas.smartglass.twins.domain.dtos.twins.TwinModelDTO;
 import com.turomas.smartglass.twins.repositories.TwinsRepository;
 import com.turomas.smartglass.twins.repositories.exceptions.TwinNotFound;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 
 @Service
 public class TwinsProxy implements TwinsService {
+  @NonNull
   private final TwinsRepository twinsRepository;
 
   public TwinsProxy(TwinsRepository twinsRepository) {

@@ -2,6 +2,7 @@ package com.turomas.smartglass.events.services;
 
 import com.turomas.smartglass.events.domain.Event;
 import com.turomas.smartglass.events.repositories.EventsRepository;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.util.Collection;
 
 @Service
 public class EventsProxy implements EventsService {
+  @NonNull
   private final EventsRepository eventsRepository;
 
   public EventsProxy(EventsRepository eventsRepository) {

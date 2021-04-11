@@ -3,12 +3,14 @@ package com.turomas.smartglass.twins.services;
 import com.turomas.smartglass.twins.domain.DateRange;
 import com.turomas.smartglass.twins.domain.dtos.statistics.*;
 import com.turomas.smartglass.twins.repositories.exceptions.TwinNotFound;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 
 @Service
 public class StatisticsProxy implements StatisticsService {
+  @NonNull
   private final TwinsService twinsService;
 
   public StatisticsProxy(TwinsService twinsService) {

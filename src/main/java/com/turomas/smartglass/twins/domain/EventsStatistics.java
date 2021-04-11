@@ -8,6 +8,7 @@ import com.turomas.smartglass.twins.domain.dtos.statistics.ErrorDTO;
 import com.turomas.smartglass.twins.domain.dtos.statistics.MaterialDTO;
 import com.turomas.smartglass.twins.domain.dtos.statistics.OptimizationDTO;
 import com.turomas.smartglass.twins.domain.dtos.statistics.ToolsDTO;
+import lombok.NonNull;
 import org.springframework.data.util.Pair;
 
 import java.util.*;
@@ -19,7 +20,9 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.groupingBy;
 
 public class EventsStatistics {
+  @NonNull
   private final String twinName;
+  @NonNull
   private final EventsService eventsService;
 
   public EventsStatistics(String twinName, EventsService eventsService) {

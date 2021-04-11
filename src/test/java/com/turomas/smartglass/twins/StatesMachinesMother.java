@@ -8,7 +8,7 @@ import org.springframework.data.util.Pair;
 
 import java.util.Map;
 
-public class StateMachinesMother {
+public class StatesMachinesMother {
   public static StatesMachine create(TwinState initialState,
                                      Map<Pair<TwinStateType, EventType>, TwinStateType> transitions) {
     return new StatesMachine(initialState, transitions);

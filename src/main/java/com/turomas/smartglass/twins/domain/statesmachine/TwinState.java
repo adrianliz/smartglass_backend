@@ -63,7 +63,7 @@ public class TwinState implements Comparable<TwinState> {
     return Collections.emptyList();
   }
 
-  public boolean eventParamsMatch() {
+  public boolean eventsParamsMatch() {
     return ((enterEvent != null) &&
             enterEvent.paramsMatchWith(lastEventEvaluated));
   }
