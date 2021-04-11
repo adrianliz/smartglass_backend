@@ -34,7 +34,7 @@ Se DEBE crear un fichero .env en la carpeta `resources` que contenga las variabl
   - TRANSITIONS_FILE = Ruta absoluta al fichero .json que define las transiciones
   - STATES_UPDATE_DELAY = Delay en ms para actualizar los estados por los que ha transitado cada gemelo
 
-A modo de ejemplo se incluye un fichero .env.example en la carpeta `resources`
+A modo de ejemplo se incluye un fichero .env en la carpeta `resources`
 
 ## 🏁 Integración continua
 
