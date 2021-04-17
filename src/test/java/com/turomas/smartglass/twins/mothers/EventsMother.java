@@ -1,4 +1,4 @@
-package com.turomas.smartglass.twins;
+package com.turomas.smartglass.twins.mothers;
 
 import com.turomas.smartglass.events.domain.Event;
 import com.turomas.smartglass.events.domain.EventParams;

@@ -2,6 +2,7 @@ package com.turomas.smartglass.events.domain;
 
 import com.mongodb.lang.NonNull;
 import com.turomas.smartglass.events.services.EventsService;
+import com.turomas.smartglass.twins.domain.DateRange;
 import com.turomas.smartglass.twins.domain.dtos.statistics.ToolsDTO;
 import com.turomas.smartglass.twins.domain.statesmachine.TwinStateType;
 import lombok.AllArgsConstructor;
@@ -12,7 +13,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.util.Pair;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -71,12 +71,12 @@ public class Event implements Comparable<Event> {
     return Optional.empty();
   }
 
-  public long secondsUntil(Event event) {
-    if (event != null) {
-      return (Duration.between(timestamp, event.timestamp).getSeconds());
+  public Optional<DateRange> dateRangeUntil(Event event) {
+    if ((event != null) && (timestamp.isBefore(event.timestamp))) {
+      return Optional.of(new DateRange(timestamp, event.timestamp));
     }
 
-    return 0;
+    return Optional.empty();
   }
 
   public Collection<Event> getSubsequentEvents(String twinName, EventsService eventsService) {

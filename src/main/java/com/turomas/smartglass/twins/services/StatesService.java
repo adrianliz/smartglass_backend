@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface StatesService {
   Optional<TwinState> getLastState(String twinName);
 
-  Collection<TwinState> getStatesBetween(String twinName, LocalDateTime startDate, LocalDateTime endDate);
+  Collection<TwinState> getOverlapStates(String twinName, LocalDateTime startDate, LocalDateTime endDate);
 
   void saveStates(Collection<TwinState> states);
 }

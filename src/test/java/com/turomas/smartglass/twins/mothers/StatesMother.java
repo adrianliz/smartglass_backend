@@ -1,4 +1,4 @@
-package com.turomas.smartglass.twins;
+package com.turomas.smartglass.twins.mothers;
 
 import com.turomas.smartglass.events.domain.Event;
 import com.turomas.smartglass.events.domain.EventType;
@@ -10,34 +10,33 @@ import org.bson.types.ObjectId;
 import java.time.LocalDateTime;
 
 public class StatesMother {
-  private static final LocalDateTime START_DATE = LocalDateTime.of(1999, 7, 5, 0, 0);
 
   public static TwinState initial(TwinStateType type) {
     return TwinState.of(type, "Turomas1");
   }
 
   public static TwinState doingProcess(ProcessName processName) {
-    return doingProcess(processName, 0);
+    return doingProcess(processName, LocalDateTime.now(), 0);
   }
 
-  public static TwinState doingProcess(ProcessName processName, long secondsInState) {
-    Event enterEvent = EventsMother.startsProcess(processName, START_DATE);
-    Event lastEventEvaluated = EventsMother.startsProcess(processName, START_DATE.plusSeconds(secondsInState));
+  public static TwinState doingProcess(ProcessName processName, LocalDateTime startDate, long secondsInState) {
+    Event enterEvent = EventsMother.startsProcess(processName, startDate);
+    Event lastEventEvaluated = EventsMother.startsProcess(processName, startDate.plusSeconds(secondsInState));
 
     return of(TwinStateType.DOING_PROCESS, enterEvent, lastEventEvaluated);
   }
 
-  public static TwinState of(TwinStateType type, long secondsInState) {
-    return of(type, EventType.UNDEFINED, secondsInState);
+  public static TwinState of(TwinStateType type, LocalDateTime startDate, long secondsInState) {
+    return of(type, EventType.UNDEFINED, startDate, secondsInState);
   }
 
   public static TwinState of(TwinStateType type, EventType eventType) {
-    return of(type, eventType, 0);
+    return of(type, eventType, LocalDateTime.now(), 0);
   }
 
-  public static TwinState of(TwinStateType type, EventType eventType, long secondsInState) {
-    Event enterEvent = EventsMother.of(eventType, START_DATE);
-    Event lastEventEvaluated = EventsMother.of(eventType, START_DATE.plusSeconds(secondsInState));
+  public static TwinState of(TwinStateType type, EventType eventType, LocalDateTime startDate, long secondsInState) {
+    Event enterEvent = EventsMother.of(eventType, startDate);
+    Event lastEventEvaluated = EventsMother.of(eventType, startDate.plusSeconds(secondsInState));
 
     return of(type, enterEvent, lastEventEvaluated);
   }

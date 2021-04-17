@@ -1,4 +1,4 @@
-package com.turomas.smartglass.twins;
+package com.turomas.smartglass.twins.mothers;
 
 import com.turomas.smartglass.events.domain.Event;
 import com.turomas.smartglass.events.services.EventsService;
@@ -15,7 +15,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 public class StatisticsMother {
   public static StatesStatistics of(StatesService statesService, Collection<TwinState> mockTransitedStates) {
-    Mockito.when(statesService.getStatesBetween(any(String.class), any(LocalDateTime.class), any(LocalDateTime.class)))
+    Mockito.when(statesService.getOverlapStates(any(String.class), any(LocalDateTime.class), any(LocalDateTime.class)))
            .thenReturn(mockTransitedStates);
 
     return new StatesStatistics("Turomas1", statesService);

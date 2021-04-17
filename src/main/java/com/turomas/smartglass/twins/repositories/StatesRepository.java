@@ -13,6 +13,6 @@ public interface StatesRepository extends MongoRepository<TwinState, String> {
   @Query(value = "{twinName: ?0}")
   Page<TwinState> getStates(String twinName, Pageable pageable);
 
-  @Query(value = "{twinName: ?0, 'enterEvent.timestamp': {$gte: ?1, $lt: ?2}}")
-  SortedSet<TwinState> getStatesBetween(String twinName, LocalDateTime startDate, LocalDateTime endDate);
+  @Query(value = "{twinName: ?0, 'lastEventEvaluated.timestamp': {$gt: ?1}, 'enterEvent.timestamp': {$lt: ?2}}")
+  SortedSet<TwinState> getOverlapStates(String twinName, LocalDateTime startDate, LocalDateTime endDate);
 }

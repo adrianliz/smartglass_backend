@@ -5,6 +5,7 @@ import com.turomas.smartglass.events.domain.Event;
 import com.turomas.smartglass.events.domain.EventType;
 import com.turomas.smartglass.events.domain.ProcessName;
 import com.turomas.smartglass.events.services.EventsService;
+import com.turomas.smartglass.twins.domain.DateRange;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -77,9 +78,13 @@ public class TwinState implements Comparable<TwinState> {
     return Optional.empty();
   }
 
-  public long durationSeconds() {
-    if (enterEvent != null) {
-      return enterEvent.secondsUntil(lastEventEvaluated);
+  public long overlapSecondsWith(DateRange dateRange) {
+    if ((dateRange != null) && (enterEvent != null)) {
+      Optional<DateRange> stateInterval = enterEvent.dateRangeUntil(lastEventEvaluated);
+
+      if (stateInterval.isPresent()) {
+        return dateRange.overlapSecondsWith(stateInterval.get());
+      }
     }
 
     return 0;

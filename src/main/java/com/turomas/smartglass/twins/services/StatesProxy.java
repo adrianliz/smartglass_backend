@@ -35,8 +35,8 @@ public class StatesProxy implements StatesService {
   }
 
   @Override
-  public Collection<TwinState> getStatesBetween(String twinName, LocalDateTime startDate, LocalDateTime endDate) {
-    return statesRepository.getStatesBetween(twinName, startDate, endDate);
+  public Collection<TwinState> getOverlapStates(String twinName, LocalDateTime startDate, LocalDateTime endDate) {
+    return statesRepository.getOverlapStates(twinName, startDate, endDate);
   }
 
   @Override

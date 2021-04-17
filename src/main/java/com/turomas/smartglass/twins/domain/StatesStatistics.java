@@ -13,6 +13,7 @@ import lombok.NonNull;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static com.turomas.smartglass.twins.domain.dtos.statistics.RatioDTO.RatioId.*;
 
@@ -27,8 +28,12 @@ public class StatesStatistics {
     this.statesService = statesService;
   }
 
-  private long totalSecondsIf(Collection<TwinState> states, Predicate<TwinState> condition) {
-    return states.stream().filter(condition).mapToLong(TwinState::durationSeconds).sum();
+  private Stream<TwinState> statesThat(Collection<TwinState> states, Predicate<TwinState> condition) {
+    return states.stream().filter(condition);
+  }
+
+  private long overlapSecondsWith(Stream<TwinState> states, DateRange dateRange) {
+    return states.mapToLong(state -> state.overlapSecondsWith(dateRange)).sum();
   }
 
   private long totalStatesThat(Collection<TwinState> states, Predicate<TwinState> condition) {
@@ -39,12 +44,15 @@ public class StatesStatistics {
     long workingSeconds = 0, standbySeconds = 0, dontAvailableSeconds = 0, completedProcesses = 0, abortedProcesses = 0;
 
     if (dateRange != null) {
-      Collection<TwinState> states = dateRange.getStatesInside(twinName, statesService);
+      Collection<TwinState> states = dateRange.getOverlapStates(twinName, statesService);
 
-      workingSeconds = totalSecondsIf(states, state -> state.typeIs(TwinStateType.DOING_PROCESS));
-      standbySeconds = totalSecondsIf(states, state -> state.typeIs(TwinStateType.IN_STANDBY));
-      dontAvailableSeconds = totalSecondsIf(states, state ->
-        state.typeIs(TwinStateType.IN_BREAKDOWN) || state.typeIs(TwinStateType.OFF));
+      workingSeconds = overlapSecondsWith(statesThat(states, state -> state.typeIs(TwinStateType.DOING_PROCESS)),
+                                          dateRange);
+      standbySeconds = overlapSecondsWith(statesThat(states, state -> state.typeIs(TwinStateType.IN_STANDBY)),
+                                          dateRange);
+      dontAvailableSeconds = overlapSecondsWith(statesThat(states, state -> state.typeIs(TwinStateType.IN_BREAKDOWN) ||
+                                                                            state.typeIs(TwinStateType.OFF)),
+                                                dateRange);
       completedProcesses = totalStatesThat(states, state ->
         state.typeIs(TwinStateType.DOING_PROCESS) && state.lastEventTypeIs(EventType.END_PROCESS));
       abortedProcesses = totalStatesThat(states, state ->
@@ -61,12 +69,14 @@ public class StatesStatistics {
     long workingSeconds = 0, onSeconds = 0;
 
     if (dateRange != null) {
-      Collection<TwinState> states = dateRange.getStatesInside(twinName, statesService);
+      Collection<TwinState> states = dateRange.getOverlapStates(twinName, statesService);
 
-      workingSeconds = totalSecondsIf(states, state -> state.typeIs(TwinStateType.DOING_PROCESS));
-      onSeconds = totalSecondsIf(states, state ->
-        state.typeIs(TwinStateType.IN_STANDBY) || state.typeIs(TwinStateType.IN_BREAKDOWN) ||
-        state.typeIs(TwinStateType.DOING_PROCESS));
+      workingSeconds = overlapSecondsWith(statesThat(states, state -> state.typeIs(TwinStateType.DOING_PROCESS)),
+                                          dateRange);
+      onSeconds = overlapSecondsWith(statesThat(states, (state -> state.typeIs(TwinStateType.IN_STANDBY) ||
+                                                                  state.typeIs(TwinStateType.IN_BREAKDOWN) ||
+                                                                  state.typeIs(TwinStateType.DOING_PROCESS))),
+                                     dateRange);
 
     }
 
@@ -77,12 +87,15 @@ public class StatesStatistics {
     long processingGlassSeconds = 0, loadingGlassSeconds = 0, standbySeconds = 0;
 
     if (dateRange != null) {
-      Collection<TwinState> states = dateRange.getStatesInside(twinName, statesService);
+      Collection<TwinState> states = dateRange.getOverlapStates(twinName, statesService);
 
-      processingGlassSeconds = totalSecondsIf(states, state ->
-        state.starts(ProcessName.CUT) || state.starts(ProcessName.LOWE));
-      loadingGlassSeconds = totalSecondsIf(states, state -> state.starts(ProcessName.LOAD_GLASS));
-      standbySeconds = totalSecondsIf(states, state -> state.typeIs(TwinStateType.IN_STANDBY));
+      processingGlassSeconds = overlapSecondsWith(statesThat(states, state -> state.starts(ProcessName.CUT) ||
+                                                                              state.starts(ProcessName.LOWE)),
+                                                  dateRange);
+      loadingGlassSeconds = overlapSecondsWith(statesThat(states, state -> state.starts(ProcessName.LOAD_GLASS)),
+                                               dateRange);
+      standbySeconds = overlapSecondsWith(statesThat(states, state -> state.typeIs(TwinStateType.IN_STANDBY)),
+                                          dateRange);
     }
 
     return new TimeDistributionDTO(processingGlassSeconds, loadingGlassSeconds, standbySeconds);

@@ -6,6 +6,9 @@ import com.turomas.smartglass.twins.domain.dtos.statistics.ErrorDTO;
 import com.turomas.smartglass.twins.domain.dtos.statistics.MaterialDTO;
 import com.turomas.smartglass.twins.domain.dtos.statistics.OptimizationDTO;
 import com.turomas.smartglass.twins.domain.dtos.statistics.ToolsDTO;
+import com.turomas.smartglass.twins.mothers.DateRangeMother;
+import com.turomas.smartglass.twins.mothers.EventsMother;
+import com.turomas.smartglass.twins.mothers.StatisticsMother;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -84,7 +87,7 @@ public class EventsStatisticsShouldTest {
   @MethodSource("testMaterialsUsed")
   void shouldHaveMaterialsUsed(Collection<MaterialDTO> expectedMaterials, Collection<Event> mockEvents) {
     Collection<MaterialDTO> materialsUsed =
-      StatisticsMother.of(eventsService, mockEvents).calculateMaterialsUsage(DateRangeMother.random());
+      StatisticsMother.of(eventsService, mockEvents).calculateMaterialsUsage(DateRangeMother.today());
 
     assertTrue(materialsUsed.containsAll(expectedMaterials));
   }
@@ -94,7 +97,7 @@ public class EventsStatisticsShouldTest {
   void shouldHaveOptimizationsProcessed(Collection<OptimizationDTO> expectedOptimizations,
                                         Collection<Event> mockEvents) {
     Collection<OptimizationDTO> optimizations =
-      StatisticsMother.of(eventsService, mockEvents).calculateOptimizationsProcessed(DateRangeMother.random());
+      StatisticsMother.of(eventsService, mockEvents).calculateOptimizationsProcessed(DateRangeMother.today());
 
     assertTrue(optimizations.containsAll(expectedOptimizations));
   }
@@ -103,7 +106,7 @@ public class EventsStatisticsShouldTest {
   @MethodSource("testToolsInfo")
   void shouldHaveToolsInfo(ToolsDTO expectedToolsInfo, Collection<Event> mockEvents) {
     ToolsDTO toolsInfo =
-      StatisticsMother.of(eventsService, mockEvents).calculateToolsInfo(DateRangeMother.random());
+      StatisticsMother.of(eventsService, mockEvents).calculateToolsInfo(DateRangeMother.today());
 
     assertEquals(expectedToolsInfo, toolsInfo);
   }
@@ -112,7 +115,7 @@ public class EventsStatisticsShouldTest {
   @MethodSource("testErrorsProduced")
   void shouldHaveErrorsProduced(Collection<ErrorDTO> expectedErrors, Collection<Event> mockEvents) {
     Collection<ErrorDTO> errors =
-      StatisticsMother.of(eventsService, mockEvents).calculateErrorsProduced(DateRangeMother.random());
+      StatisticsMother.of(eventsService, mockEvents).calculateErrorsProduced(DateRangeMother.today());
 
     assertTrue(errors.containsAll(expectedErrors));
   }
