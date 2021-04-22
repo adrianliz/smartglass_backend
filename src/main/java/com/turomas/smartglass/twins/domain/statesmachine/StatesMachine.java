@@ -38,7 +38,7 @@ public class StatesMachine {
       TwinStateType newStateType = transitions.get(transitionTrigger);
 
       if (newStateType != null) {
-        GuardStrategy guard = guards.get(Pair.of(getCurrentStateType(), newStateType));
+        GuardStrategy guard = guards.get(Pair.of(currentState.getType(), newStateType));
 
         if ((guard == null) || (! guard.cutTransition(currentState))) {
           currentState = TwinState.of(newStateType, twinName, event);
@@ -48,7 +48,7 @@ public class StatesMachine {
     });
   }
 
-  public Collection<TwinState> processEvents(EventsService eventsService) {
+  public SortedSet<TwinState> processEvents(EventsService eventsService) {
     SortedSet<TwinState> transitedStates = new TreeSet<>();
     transitedStates.add(currentState);
 
@@ -59,9 +59,5 @@ public class StatesMachine {
     }
 
     return transitedStates;
-  }
-
-  public TwinStateType getCurrentStateType() {
-    return currentState.getType();
   }
 }

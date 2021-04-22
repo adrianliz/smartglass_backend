@@ -10,8 +10,12 @@ public enum TwinStateType {
   UNDEFINED;
 
   public static TwinStateType of(JsonElement jsonElement) {
+    return of(jsonElement.getAsString());
+  }
+
+  public static TwinStateType of(String name) {
     for (TwinStateType twinStateType : TwinStateType.values()) {
-      if (twinStateType.name().equals(jsonElement.getAsString().toUpperCase())) {
+      if (twinStateType.name().equals(name.toUpperCase())) {
         return twinStateType;
       }
     }

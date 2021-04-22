@@ -7,7 +7,7 @@ import lombok.NonNull;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
+import java.util.SortedSet;
 
 @Service
 public class TwinStatesUpdater {
@@ -29,10 +29,11 @@ public class TwinStatesUpdater {
   @Scheduled(fixedDelayString = "${states.updateDelay}")
   private void updateTwinStates() {
     for (Twin twin : twinsService.getTwins()) {
-      Collection<TwinState> transitedStates = twin.processEvents(eventsService);
+      SortedSet<TwinState> transitedStates = twin.processEvents(eventsService);
 
       if (! transitedStates.isEmpty()) {
         statesService.saveStates(transitedStates);
+        twinsService.updateState(transitedStates.last());
       }
     }
   }
