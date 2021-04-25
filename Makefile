@@ -3,3 +3,6 @@ docker-up-remote:
 
 docker-down-remote:
 	@ssh alizaga@155.210.68.101 "docker stop smartglass-backend && docker rm smartglass-backend"
+
+logs:
+	@ssh alizaga@155.210.68.101 "docker logs smartglass-backend" > logs.txt

@@ -2,9 +2,12 @@ package com.turomas.smartglass.twins.repositories;
 
 public enum OWLElement {
   MACHINE(OWLPrefix.SMARTGLASS, "Machine"),
-  STATE(OWLPrefix.SMARTGLASS, "state"),
+  VALUE(OWLPrefix.SMARTGLASS, "value"),
+  END_DATE(OWLPrefix.SMARTGLASS, "endDate"),
+  IS_IN_STATE(OWLPrefix.SMARTGLASS, "isInState"),
   HAS_BRAND(OWLPrefix.SMARTGLASS, "hasBrand"),
-  HAS_MODEL(OWLPrefix.SMARTGLASS, "hasModel");
+  HAS_MODEL(OWLPrefix.SMARTGLASS, "hasModel"),
+  HAS_RATIO(OWLPrefix.SMARTGLASS, "hasRatio");
 
   static final String SEPARATOR = ":";
   private final OWLPrefix prefix;
@@ -15,8 +18,7 @@ public enum OWLElement {
     this.identifier = identifier;
   }
 
-  @Override
-  public String toString() {
-    return prefix + SEPARATOR + identifier;
+  public String uri() {
+    return prefix.getAbbreviation() + SEPARATOR + identifier;
   }
 }

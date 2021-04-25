@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.SortedSet;
 
 @Service
-public class TwinStatesUpdater {
+public class TwinsUpdater {
   @NonNull
   private final TwinsService twinsService;
   @NonNull
@@ -18,22 +18,25 @@ public class TwinStatesUpdater {
   @NonNull
   private final StatesService statesService;
 
-  public TwinStatesUpdater(TwinsService twinsService, EventsService eventsService, StatesService statesService) {
+  public TwinsUpdater(TwinsService twinsService, EventsService eventsService, StatesService statesService) {
     this.twinsService = twinsService;
     this.eventsService = eventsService;
     this.statesService = statesService;
 
-    updateTwinStates();
+    updateTwins();
   }
 
-  @Scheduled(fixedDelayString = "${states.updateDelay}")
-  private void updateTwinStates() {
+  @Scheduled(fixedDelayString = "${twins.updateDelay}")
+  void updateTwins() {
     for (Twin twin : twinsService.getTwins()) {
       SortedSet<TwinState> transitedStates = twin.processEvents(eventsService);
 
       if (! transitedStates.isEmpty()) {
+        String twinName = transitedStates.last().getTwinName();
+
         statesService.saveStates(transitedStates);
-        twinsService.updateState(transitedStates.last());
+        twinsService.updateRatios(twinName);
+        twinsService.updateLastState(twinName, statesService);
       }
     }
   }
