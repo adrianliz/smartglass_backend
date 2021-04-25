@@ -48,6 +48,7 @@ public class StatesMachineJSONFactory implements StatesMachineFactory {
 
   public StatesMachine createFor(String twinName) {
     Optional<TwinState> initialState = statesService.getLastState(twinName);
-    return new StatesMachine(initialState.orElse(TwinState.of(TwinStateType.OFF, twinName)), statesMachineTransitions);
+    return new StatesMachine(initialState.orElse(TwinState.firstState(TwinStateType.OFF, twinName)),
+                             statesMachineTransitions);
   }
 }

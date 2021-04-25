@@ -3,8 +3,16 @@ spring:
     mongodb:
       uri: ${env.MONGO_URI}
 
+  task:
+    scheduling:
+      pool:
+        size: 10
+
+ontology:
+  uri: ${env.ONTOLOGY_URI}
+
 transitions:
   file: ${env.TRANSITIONS_FILE}
 
-states:
-  updateDelay: ${env.STATES_UPDATE_DELAY}
+twins:
+  updateDelay: ${env.TWINS_UPDATE_DELAY}

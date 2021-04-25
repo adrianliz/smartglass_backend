@@ -1,7 +1,7 @@
 package com.turomas.smartglass.twins.services;
 
 import com.turomas.smartglass.twins.domain.Twin;
-import com.turomas.smartglass.twins.domain.dtos.twins.TwinModelDTO;
+import com.turomas.smartglass.twins.domain.dtos.twins.TwinInfoDTO;
 import com.turomas.smartglass.twins.repositories.TwinsRepository;
 import com.turomas.smartglass.twins.repositories.exceptions.TwinNotFound;
 import lombok.NonNull;
@@ -29,12 +29,22 @@ public class TwinsProxy implements TwinsService {
   }
 
   @Override
-  public Collection<TwinModelDTO> getTwinModels() {
-    return twinsRepository.getTwinModels();
+  public Collection<TwinInfoDTO> getTwinsInfo() {
+    return twinsRepository.getTwinsInfo();
   }
 
   @Override
-  public TwinModelDTO getTwinModel(String twinName) throws TwinNotFound {
-    return twinsRepository.getTwinModel(twinName);
+  public TwinInfoDTO getTwinInfo(String twinName) throws TwinNotFound {
+    return twinsRepository.getTwinInfo(twinName);
+  }
+
+  @Override
+  public void updateLastState(String twinName, StatesService statesService) throws TwinNotFound {
+    twinsRepository.updateLastState(twinName, statesService);
+  }
+
+  @Override
+  public void updateRatios(String twinName) throws TwinNotFound {
+    twinsRepository.updateRatios(twinName);
   }
 }

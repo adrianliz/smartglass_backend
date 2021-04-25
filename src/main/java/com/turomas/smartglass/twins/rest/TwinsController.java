@@ -1,6 +1,6 @@
 package com.turomas.smartglass.twins.rest;
 
-import com.turomas.smartglass.twins.domain.dtos.twins.TwinModelDTO;
+import com.turomas.smartglass.twins.domain.dtos.twins.TwinInfoDTO;
 import com.turomas.smartglass.twins.services.TwinsService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,13 +18,13 @@ public class TwinsController {
     this.twinsService = twinsService;
   }
 
-  @GetMapping("models")
-  public Collection<TwinModelDTO> getTwinModels() {
-    return twinsService.getTwinModels();
+  @GetMapping("info")
+  public Collection<TwinInfoDTO> getTwinsInfo() {
+    return twinsService.getTwinsInfo();
   }
 
-  @GetMapping("{twinName}/model")
-  public TwinModelDTO getTwinModel(@PathVariable String twinName) {
-    return twinsService.getTwinModel(twinName);
+  @GetMapping("{twinName}/info")
+  public TwinInfoDTO getTwinInfo(@PathVariable String twinName) {
+    return twinsService.getTwinInfo(twinName);
   }
 }

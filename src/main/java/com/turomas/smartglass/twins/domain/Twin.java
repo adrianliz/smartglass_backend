@@ -4,10 +4,10 @@ import com.turomas.smartglass.events.services.EventsService;
 import com.turomas.smartglass.twins.domain.dtos.statistics.*;
 import com.turomas.smartglass.twins.domain.statesmachine.StatesMachine;
 import com.turomas.smartglass.twins.domain.statesmachine.TwinState;
-import com.turomas.smartglass.twins.domain.statesmachine.TwinStateType;
 import lombok.NonNull;
 
 import java.util.Collection;
+import java.util.SortedSet;
 
 public class Twin {
   @NonNull
@@ -18,17 +18,14 @@ public class Twin {
   private final EventsStatistics eventsStatistics;
 
   public Twin(StatesMachine statesMachine, StatesStatistics statesStatistics, EventsStatistics eventsStatistics) {
+    this.statesMachine = statesMachine;
     this.statesStatistics = statesStatistics;
     this.eventsStatistics = eventsStatistics;
-    this.statesMachine = statesMachine;
+
   }
 
-  public Collection<TwinState> processEvents(EventsService eventsService) {
+  public SortedSet<TwinState> processEvents(EventsService eventsService) {
     return statesMachine.processEvents(eventsService);
-  }
-
-  public TwinStateType getCurrentState() {
-    return statesMachine.getCurrentStateType();
   }
 
   public Collection<RatioDTO> getRatios(DateRange dateRange) {

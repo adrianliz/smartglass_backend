@@ -44,11 +44,11 @@ public class TwinState implements Comparable<TwinState> {
   @Field("lastEventEvaluated")
   private Event lastEventEvaluated;
 
-  public static TwinState of(TwinStateType twinStateType, String twinName) {
+  public static TwinState firstState(TwinStateType twinStateType, String twinName) {
     return new TwinState(new ObjectId().toString(), twinStateType, twinName, null, null);
   }
 
-  public static TwinState of(TwinStateType twinStateType, String twinName, Event enterEvent) {
+  public static TwinState with(TwinStateType twinStateType, String twinName, Event enterEvent) {
     return new TwinState(new ObjectId().toString(), twinStateType, twinName, enterEvent, enterEvent);
   }
 

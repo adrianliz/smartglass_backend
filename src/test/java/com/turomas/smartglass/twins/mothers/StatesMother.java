@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class StatesMother {
 
   public static TwinState initial(TwinStateType type) {
-    return TwinState.of(type, "Turomas1");
+    return TwinState.firstState(type, "Turomas1");
   }
 
   public static TwinState doingProcess(ProcessName processName) {

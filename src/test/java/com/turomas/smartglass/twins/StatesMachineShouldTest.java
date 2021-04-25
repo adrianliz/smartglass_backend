@@ -22,7 +22,6 @@ import org.springframework.data.util.Pair;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -81,10 +80,9 @@ public class StatesMachineShouldTest {
     Mockito.when(eventsService.getSubsequentEvents(any(String.class), any(LocalDateTime.class))).thenReturn(
       List.of(mockEventOccurred));
 
-    Optional<TwinState> lastStateTransited = statesMachine.processEvents(eventsService).stream().reduce(
-      (first, last) -> last);
+    TwinState lastStateTransited = statesMachine.processEvents(eventsService).last();
 
-    assertTrue(lastStateTransited.isPresent() && lastStateTransited.get().typeIs(expectedStateType));
+    assertTrue(lastStateTransited.typeIs(expectedStateType));
   }
 
   @Test

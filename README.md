@@ -26,13 +26,14 @@ También, se podrán generar distintas estadísticas derivadas de los resultados
   de cada gemelo, persistiendo los estados por los que estos transitan y consultándolos cuando es necesario, en vez de
   mantener en memoria dichos estados y volver a calcularlos en cada reinicio del servidor
 - :white_check_mark: v0.7.0 → Tests unitarios y añadido soporte para CI (integración continua)
+- :white_check_mark: v0.8.0 → Integración con la ontología del gemelo digital
 
 ## 📁 Variables de entorno
 
 Se DEBE crear un fichero .env en la carpeta `resources` que contenga las variables de entorno:
   - MONGO_URI = URI de la conexión a la base de datos de Mongo
   - TRANSITIONS_FILE = Ruta absoluta al fichero .json que define las transiciones
-  - STATES_UPDATE_DELAY = Delay en ms para actualizar los estados por los que ha transitado cada gemelo
+  - TWINS_UPDATE_DELAY = Delay en ms para actualizar la información asociada a cada gemelo digital
 
 A modo de ejemplo se incluye un fichero .env en la carpeta `resources`
 
@@ -45,4 +46,5 @@ A modo de ejemplo se incluye un fichero .env en la carpeta `resources`
   - Ejecutar `make docker-up-remote` para crear un contenedor en la máquina 155.210.68.101 con la última imagen disponible
     en Docker Hub
   - Ejecutar `make docker-down-remote` para parar dicho contenedor 
+  - Ejecutar `make logs` para obtener los logs del contenedor en el fichero `logs.txt`
   

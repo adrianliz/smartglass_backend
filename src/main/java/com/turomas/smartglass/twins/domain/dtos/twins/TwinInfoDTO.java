@@ -6,9 +6,16 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class TwinModelDTO {
+public class TwinInfoDTO {
   private final String twinName;
   private final String machineSeries;
   private final String machineModel;
   private final TwinStateType currentState;
+
+  public TwinInfoDTO(String twinName, TwinStateType currentState) {
+    this.twinName = twinName;
+    this.currentState = currentState;
+    machineSeries = "";
+    machineModel = "";
+  }
 }
