@@ -3,11 +3,6 @@ spring:
     mongodb:
       uri: ${env.MONGO_URI}
 
-  task:
-    scheduling:
-      pool:
-        size: 10
-
 ontology:
   uri: ${env.ONTOLOGY_URI}
 
