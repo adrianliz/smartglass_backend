@@ -36,8 +36,6 @@ Se DEBE crear un fichero .env en la carpeta `resources` que contenga las variabl
   - TRANSITIONS_FILE = Ruta absoluta al fichero .json que define las transiciones
   - TWINS_UPDATE_DELAY = Delay en ms para actualizar la información asociada a cada gemelo digital
 
-A modo de ejemplo se incluye un fichero .env en la carpeta `resources`
-
 ## 🏁 Integración continua
 
 - Se dispone de un workflow de GitHub Actions que permite ejecutar los test unitarios y subir una imagen de la aplicación
